@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tilbudo</title>
+<meta name="theme-color" content="#2563eb">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Tilbudo">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232563eb'/%3E%3Ctext x='32' y='45' font-size='38' text-anchor='middle' fill='white' font-family='Arial' font-weight='700'%3ET%3C/text%3E%3C/svg%3E">
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+color-scheme:light;--bg:#f6f8fc;--card:#fff;--tx:#0f172a;--mut:#64748b;--line:#e2e8f0;--ac:#2563eb;--acx:#fff;--bad:#dc2626}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+header{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;padding:14px 18px;background:var(--card);border-bottom:1px solid var(--line)}
+h1{font-size:17px;margin:0}nav{display:flex;gap:6px;flex-wrap:wrap}
+button,select,input,textarea{font:inherit;color:inherit}
+button{border:1px solid var(--line);background:var(--card);border-radius:8px;padding:7px 12px;cursor:pointer}
+button.p{background:var(--ac);color:var(--acx);border-color:var(--ac);font-weight:600}
+button.on{border-color:var(--ac);color:var(--ac);font-weight:600}
+button.d{color:var(--bad)}
+main{max-width:900px;margin:0 auto;padding:18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:14px}
+.g{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+label{display:block;font-size:12px;color:var(--mut);margin-bottom:3px}
+input,select,textarea{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg)}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.mut{color:var(--mut);font-size:13px}.r{text-align:right}
+.ln{display:grid;grid-template-columns:3fr 70px 70px 100px 34px;gap:6px;margin-bottom:6px}
+.tag{font-size:12px;padding:2px 8px;border-radius:99px;border:1px solid var(--line)}
+.tot{margin-left:auto;max-width:280px}.tot div{display:flex;justify-content:space-between;padding:2px 0}
+.tot .b{font-weight:700;font-size:17px;border-top:1px solid var(--line);margin-top:4px;padding-top:6px}
+#doc{background:#fff;color:#111;padding:34px;border-radius:12px;border:1px solid var(--line)}
+#doc table{width:100%;border-collapse:collapse;margin:18px 0}#doc th,#doc td{padding:7px 4px;border-bottom:1px solid #ddd;text-align:left}
+#doc th.r,#doc td.r{text-align:right}
+@media (max-width:600px){.ln{grid-template-columns:1fr 1fr}.ln :first-child{grid-column:1/-1}#doc{padding:18px}}
+@media print{body{background:#fff}header,.noprint{display:none!important}main{padding:0;max-width:none}#doc{border:0;padding:0}}
+body{font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+header{position:sticky;top:0;z-index:20;box-shadow:0 8px 24px -18px rgba(15,23,42,.35)}
+h1{font-size:21px;font-weight:800;letter-spacing:-.6px}
+.card{box-shadow:0 1px 2px rgba(15,23,42,.04),0 12px 32px -20px rgba(15,23,42,.3)}
+button{transition:all .15s;font-weight:500}button:hover{border-color:var(--ac);transform:translateY(-1px)}
+button.p{box-shadow:0 8px 18px -8px rgba(37,99,235,.7)}button.p:hover{filter:brightness(1.08)}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--ac);outline-offset:-1px;background:#fff}
+.stat{font-size:28px;font-weight:800;letter-spacing:-1px;color:var(--ac)}
+.tag{font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.4px}
+.st-Kladde{background:#f1f5f9;color:#475569}.st-Sendt{background:#e0ecff;color:#1d4ed8}.st-Set{background:#fef3c7;color:#92400e}.st-Accepteret,.st-Betalt{background:#dcfce7;color:#166534}.st-Afvist{background:#fee2e2;color:#991b1b}
+#toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,20px);background:#0f172a;color:#fff;padding:11px 20px;border-radius:99px;opacity:0;transition:all .25s;pointer-events:none;z-index:50}#toast.on{opacity:1;transform:translate(-50%,0)}
+#app{display:flex;min-height:100vh}
+#hd{display:flex;flex-direction:column;gap:4px;width:236px;flex:none;position:sticky;top:0;height:100vh;padding:18px 14px;background:var(--card);border-right:1px solid var(--line);box-shadow:none}
+#hd .lg{font-size:24px;font-weight:800;letter-spacing:-.9px;padding:4px 10px 18px}#hd .lg b{color:var(--ac)}
+#hd .sp{flex:1}
+#hd button.nv{display:flex;gap:12px;align-items:center;border:0;background:none;padding:11px 12px;border-radius:10px;text-align:left;width:100%;color:var(--mut);font-weight:600;font-size:15px}
+#hd button.nv i{font-style:normal;width:22px;text-align:center}
+#hd button.nv:hover{background:#eef3ff;color:var(--ac);transform:none}#hd button.nv.on{background:#e4edff;color:var(--ac)}
+#mw{flex:1;min-width:0}
+#top{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:22px 28px 0;flex-wrap:wrap}#top h2{margin:0;font-size:28px;letter-spacing:-1px}
+main{max-width:1100px;margin:0;padding:20px 28px 48px}
+.kp{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:14px}.kp .card{margin:0}
+.k .l{font-size:12px;color:var(--mut);font-weight:700;text-transform:uppercase;letter-spacing:.6px}.k .v{font-size:30px;font-weight:800;letter-spacing:-1px;margin:6px 0 2px;color:var(--ac)}.k .s{font-size:13px;color:var(--mut)}
+.seg{display:inline-flex;background:#e6eefc;border-radius:12px;padding:4px}.seg button{border:0;background:none;padding:7px 16px;border-radius:9px;color:var(--mut);font-weight:600}.seg button:hover{transform:none}.seg button.on{background:#fff;color:var(--ac);box-shadow:0 2px 6px rgba(15,23,42,.14)}
+.ch{display:flex;align-items:flex-end;gap:12px;height:200px;margin-top:10px}.ch>div{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:6px}
+.bars{display:flex;align-items:flex-end;gap:4px;height:152px}.bars i{display:block;width:22px;border-radius:6px 6px 0 0;background:var(--ac);min-height:3px}.bars i.a{background:#22c55e}
+.dot{display:inline-block;width:9px;height:9px;border-radius:99px;background:var(--ac);margin:0 5px 0 10px}.dot.a{background:#22c55e}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}.two .card{margin-bottom:14px}
+.li{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}.li:last-child{border:0}
+.chip{border-radius:99px;padding:5px 13px;font-size:13px;margin:0 6px 8px 0;color:var(--mut)}.chip.on{background:var(--ac);color:#fff;border-color:var(--ac)}
+@media(max-width:800px){#hd{position:fixed;top:auto;bottom:0;left:0;right:0;width:100%;height:auto;flex-direction:row;padding:6px;z-index:30;border-top:1px solid var(--line);border-right:0}#hd .lg,#hd .sp,#hd .out{display:none}#hd button.nv{flex-direction:column;gap:2px;font-size:11px;padding:6px 2px;text-align:center;justify-content:center}#mw{padding-bottom:78px}#top,main{padding-left:14px;padding-right:14px}.two{grid-template-columns:1fr}.bars i{width:12px}}
+@media print{#app{display:block}}
+.ic{width:1.15em;height:1.15em;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-.2em;margin-right:7px;flex:none;transition:transform .2s}
+button i{font-style:normal;display:inline-flex}.ib .ic{margin:0}.mut .ic{color:#22c55e}
+#hd button.nv .ic{width:20px;height:20px;margin:0}#hd button.nv{position:relative}
+#hd button.nv:hover .ic{transform:translateX(3px)}
+#hd button.nv.on:before{content:"";position:absolute;left:-14px;top:9px;bottom:9px;width:4px;border-radius:0 4px 4px 0;background:var(--ac)}
+button:active{transform:scale(.96)}
+.k{transition:transform .2s,box-shadow .25s}.k:hover{transform:translateY(-3px);box-shadow:0 20px 40px -22px rgba(37,99,235,.55)}
+@keyframes up{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@keyframes grow{from{transform:scaleY(0)}}
+.anim>*{animation:up .5s cubic-bezier(.2,.7,.2,1) both}
+.anim>*:nth-child(2){animation-delay:.06s}.anim>*:nth-child(3){animation-delay:.12s}.anim>*:nth-child(4){animation-delay:.18s}.anim>*:nth-child(5){animation-delay:.24s}.anim>*:nth-child(n+6){animation-delay:.3s}
+.bars i{transform-origin:bottom;animation:grow .8s cubic-bezier(.2,.8,.2,1) both}
+.seg button{transition:background .2s,color .2s,box-shadow .2s}
+@media(max-width:800px){#hd button.nv.on:before{display:none}#hd button.nv .ic{width:22px;height:22px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.sec{font-size:11px;font-weight:700;letter-spacing:.9px;text-transform:uppercase;color:#94a3b8;padding:14px 12px 4px}
+.bars i.c{background:#f59e0b}.dot.c{background:#f59e0b}
+.pb{height:8px;background:#e6eefc;border-radius:99px;overflow:hidden;margin-top:6px}.pb i{display:block;height:100%;background:var(--ac);border-radius:99px;animation:wgrow .9s cubic-bezier(.2,.8,.2,1) both}
+@keyframes wgrow{from{width:0}}
+@media(max-width:800px){#hd .sec{display:none}#hd button.nv{flex:1;min-width:0;padding:6px 0}#hd button.nv span{overflow:hidden;text-overflow:ellipsis;max-width:100%;font-size:10px}}
+.hero{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;background:linear-gradient(120deg,#1d4ed8,#38bdf8);color:#fff;border-radius:18px;padding:24px 26px;margin-bottom:16px;box-shadow:0 22px 44px -26px rgba(37,99,235,.8)}
+.hero h3{margin:0 0 4px;font-size:26px;letter-spacing:-.7px}.hero .tip{display:flex;gap:6px;align-items:flex-start;margin-top:12px;font-size:14px;opacity:.95;max-width:460px}.hero .tip .ic{margin-top:2px}
+.qa{display:flex;gap:8px;flex-wrap:wrap}.qa button{background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.4);color:#fff;font-weight:600}.qa button:hover{background:rgba(255,255,255,.32);color:#fff;border-color:#fff}
+.three{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:14px;margin-bottom:14px}.three .card{margin:0}
+.goal{display:flex;gap:18px;align-items:center;margin-top:14px}
+.ring{width:112px;height:112px;border-radius:50%;display:grid;place-items:center;flex:none;position:relative}.ring:after{content:"";position:absolute;inset:15px;background:var(--card);border-radius:50%}.ring span{position:relative;z-index:1;font-weight:800;font-size:21px}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:10px;text-align:center;font-size:13px}.cal b{color:var(--mut);font-size:11px}.cal span{padding:6px 0;border-radius:8px}.cal .td{background:var(--ac);color:#fff;font-weight:700}.cal .dv{box-shadow:inset 0 -3px 0 #ef4444}
+.tdl{display:flex;gap:8px;align-items:center;margin:0;font-size:14px;color:var(--tx);cursor:pointer}.tdl.dn{text-decoration:line-through;color:var(--mut)}
+body{background:#f3f6fb}
+.card{border-radius:16px;padding:20px;border:1px solid #e6ebf3}
+input,select,textarea{background:#fff;border:1px solid #dbe3ef;border-radius:10px;padding:10px 12px;transition:border-color .15s,box-shadow .15s}
+input:focus,select:focus,textarea:focus{outline:0;border-color:var(--ac);box-shadow:0 0 0 4px rgba(37,99,235,.14);background:#fff}
+button{border-radius:10px;padding:9px 14px;border:1px solid #dbe3ef;background:#fff}
+button.ib{width:34px;height:34px;padding:0;display:inline-grid;place-items:center}.ib .ic{margin:0}
+#top h2{font-size:28px;font-weight:800;letter-spacing:-1px}#sub{margin-top:2px;font-size:14px}#acts{display:flex;gap:8px;flex-wrap:wrap}
+.tw{background:#fff;border:1px solid #e6ebf3;border-radius:16px;overflow:auto;box-shadow:0 1px 2px rgba(15,23,42,.04),0 14px 34px -24px rgba(15,23,42,.35);margin-bottom:14px}
+.tbl{width:100%;border-collapse:collapse;min-width:680px}
+.tbl th{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--mut);text-align:left;padding:13px 16px;background:#f8fafd;border-bottom:1px solid #e6ebf3;white-space:nowrap}
+.tbl th.r,.tbl td.r{text-align:right}.tbl th.s{cursor:pointer;user-select:none}.tbl th.s:hover{color:var(--ac)}
+.tbl td{padding:14px 16px;border-bottom:1px solid #eef2f8;vertical-align:middle}
+.tbl tbody tr{transition:background .15s}.tbl tbody tr:hover{background:#f6f9ff}.tbl tbody tr:last-child td{border-bottom:0}
+.tbl tfoot td{background:#f8fafd;font-weight:700;border-top:1px solid #e6ebf3;padding:14px 16px}
+.who{display:flex;gap:12px;align-items:center}.av{width:36px;height:36px;border-radius:50%;background:#e4edff;color:var(--ac);display:grid;place-items:center;font-weight:700;font-size:13px;flex:none}
+.act{white-space:nowrap}.act button,.act a{margin-left:4px}
+.bd{display:inline-flex;align-items:center;gap:7px;padding:4px 11px;border-radius:99px;font-size:12px;font-weight:600;background:#f1f5f9}.bd i,i.cd{width:8px;height:8px;border-radius:50%;display:inline-block}i.cd{margin-right:7px}
+.stsel{border:0;border-radius:99px;padding:6px 12px;font-weight:600;font-size:12px;width:auto;cursor:pointer}
+.tb{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.sw{position:relative;flex:1;min-width:200px;max-width:380px}.sw .ic{position:absolute;left:13px;top:50%;transform:translateY(-50%);margin:0;color:var(--mut)}.sw input{padding-left:40px}
+.stack{display:flex;height:12px;border-radius:99px;overflow:hidden;background:#e6eefc;margin:14px 0 12px}.stack i{display:block;height:100%;animation:wgrow .9s cubic-bezier(.2,.8,.2,1) both}
+.lg2{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--mut)}.lg2 span{display:inline-flex;gap:7px;align-items:center}.lg2 i{width:9px;height:9px;border-radius:50%;display:block}
+.empty{text-align:center;padding:60px 20px;background:#fff;border:1px dashed #cdd8ea;border-radius:18px}.empty>.ic{width:46px;height:46px;margin:0 0 12px;color:var(--ac);stroke-width:1.6}.empty h3{margin:0 0 6px;font-size:21px;letter-spacing:-.5px}.empty p{max-width:420px;margin:0 auto 18px}
+#dr{position:fixed;inset:0;z-index:60}.ov{position:absolute;inset:0;background:rgba(15,23,42,.42);animation:fade .2s both}
+.pn{position:absolute;right:0;top:0;bottom:0;width:min(440px,100%);background:#fff;padding:26px;overflow:auto;box-shadow:-30px 0 60px -30px rgba(15,23,42,.4);animation:slide .32s cubic-bezier(.2,.8,.2,1) both}
+@keyframes fade{from{opacity:0}}@keyframes slide{from{transform:translateX(100%)}}
+.fld{margin-bottom:14px}
+@media print{#dr{display:none}}
+button{display:inline-flex;align-items:center;justify-content:center;gap:7px;line-height:1.2;text-align:center}
+button .ic{margin:0}#hd button.nv{justify-content:flex-start}.act button,.act a{vertical-align:middle}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}.g2 .g2{margin-bottom:0}@media(max-width:800px){.g2{grid-template-columns:1fr}}
+.card h4{margin:0 0 2px;font-size:17px;letter-spacing:-.3px}.card h4+.mut{margin:0 0 16px;font-size:13px}
+.tiles{display:flex;gap:10px;flex-wrap:wrap}.tile{flex-direction:column;align-items:center;gap:2px;padding:14px 20px;min-width:130px;border-radius:14px}.tile b{font-size:15px}.tile .mut{font-size:12px}.tile:hover{border-color:var(--ac);background:#f6f9ff}
+.pi{display:inline-flex;align-items:center;gap:6px}.pi input{width:110px;text-align:right}.tbl td input,.tbl td select{padding:8px 10px}
+.tr{max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.logoBox{height:92px;border:1px dashed #cdd8ea;border-radius:12px;display:grid;place-items:center;background:#f8fafd}.logoBox img{max-height:70px;max-width:80%}
+.fb{display:inline-flex;align-items:center;gap:7px;padding:9px 14px;border:1px solid #dbe3ef;border-radius:10px;background:#fff;cursor:pointer;font-weight:500;margin:0;color:var(--tx);font-size:14px}.fb:hover{border-color:var(--ac)}.fb .ic{margin:0}
+.sws{display:flex;gap:8px;align-items:center;margin:6px 0 16px}.swc{width:30px;height:30px;padding:0;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 1px #cdd8ea}.swc.on{box-shadow:0 0 0 2px var(--ac)}.sws input[type=color]{width:34px;height:34px;padding:2px}
+.mini{border:1px solid #e6ebf3;border-radius:12px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;background:#fff}.mini img{max-height:28px;margin-right:8px;vertical-align:middle}
+button:focus-visible,a:focus-visible,select:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+@media(max-width:800px){#hd{padding-bottom:calc(6px + env(safe-area-inset-bottom,0px))}#mw{padding-bottom:calc(78px + env(safe-area-inset-bottom,0px))}}
+button,.fb,.chip,.tile,.seg button{justify-content:center;text-align:center}
+.tile b,.tile .mut{text-align:center}
+.stsel{text-align:center;text-align-last:center}
+#hd button.nv{justify-content:flex-start;text-align:left}
+@media(max-width:800px){#hd button.nv{justify-content:center;text-align:center}}
+.kg{display:grid;grid-template-columns:minmax(0,2.5fr) minmax(260px,1fr);gap:14px;align-items:start}.kg .card{margin-bottom:14px}@media(max-width:1000px){.kg{grid-template-columns:1fr}}
+.kh{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}.km{margin:0 8px;font-size:21px;letter-spacing:-.5px;min-width:150px}
+.kw{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--mut);padding:6px 0}
+.kc{display:grid;grid-template-columns:repeat(7,1fr);border-top:1px solid #e6ebf3;border-left:1px solid #e6ebf3}
+.kd{min-height:104px;padding:6px;border-right:1px solid #e6ebf3;border-bottom:1px solid #e6ebf3;cursor:pointer;display:flex;flex-direction:column;gap:3px;transition:background .15s;min-width:0}.kd:hover{background:#f6f9ff}.kd.o{background:#fafbfd;color:#a0aec0}.kd.t{background:#eef4ff}
+.kd .n{font-size:13px;font-weight:600;width:24px;height:24px;display:grid;place-items:center;border-radius:50%}.kd.t .n{background:var(--ac);color:#fff}
+.ev{display:block;width:100%;text-align:left;padding:2px 6px;font-size:11px;font-weight:600;border:0;border-left:3px solid var(--c);background:#eef4ff;background:color-mix(in srgb,var(--c) 14%,#fff);color:#1e293b;border-radius:5px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.ev:hover{transform:none;filter:brightness(.96)}
+.more{font-size:11px;color:var(--mut);padding-left:4px}
+#hd button.nv em{margin-left:auto;background:#ef4444;color:#fff;font-style:normal;font-size:11px;font-weight:700;padding:1px 7px;border-radius:99px}#hd button.nv em:empty{display:none}
+@media(max-width:600px){.kd{min-height:62px;padding:3px}.ev{font-size:0;height:6px;padding:0;border-radius:3px}#hd button.nv em{display:none}}
+.tgh{display:grid;border-bottom:1px solid #e6ebf3;align-items:end}.tgh .th{text-align:center;padding:6px 0;cursor:pointer}.tgh .th span{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--mut)}
+.tgh .th b{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;font-size:16px}.tgh .th:hover b{background:#e4edff}.tgh .th.t b,.tgh .th.t:hover b{background:var(--ac);color:#fff}
+.tgh.ad{padding:4px 0;align-items:start;font-size:11px}.tgh.ad>div{padding:0 2px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.tg{max-height:620px;overflow:auto;position:relative}.tb2{display:grid}
+.tl span{display:block;font-size:11px;color:var(--mut);text-align:right;padding-right:8px;transform:translateY(-7px)}
+.tcol{position:relative;border-left:1px solid #e6ebf3;background-image:repeating-linear-gradient(to bottom,transparent 0,transparent 51px,#eef2f8 51px,#eef2f8 52px);cursor:pointer;min-width:0}.tcol.t{background-color:#f5f9ff}
+.tev{position:absolute;display:block;text-align:left;padding:3px 6px;font-size:11px;line-height:1.25;overflow:hidden;border:0;border-left:3px solid var(--c);background:#eef4ff;background:color-mix(in srgb,var(--c) 18%,#fff);color:#1e293b;border-radius:6px;box-shadow:0 1px 3px rgba(15,23,42,.12);z-index:2}.tev:hover{transform:none;filter:brightness(.96)}
+.now{position:absolute;left:0;right:0;height:2px;background:#ef4444;z-index:3;pointer-events:none}.now:before{content:"";position:absolute;left:-5px;top:-4px;width:10px;height:10px;border-radius:50%;background:#ef4444}
+.ag h4{margin:16px 0 4px;font-size:14px}.kd .n{cursor:pointer}.kd .n:hover{background:#e4edff}.kd.t .n:hover{background:var(--ac)}
+@media(max-width:600px){.tgh .th b{width:24px;height:24px;font-size:13px}.tev{font-size:10px;padding:2px 3px}}
+/* ===== Polish: ren, rolig og konsekvent ===== */
+:root{--line:#e8ecf3}
+body{background:#f7f8fb;letter-spacing:-.006em}
+main{padding:24px 32px 56px}#top{padding:28px 32px 0}
+.card,.tw{border:1px solid #eaeef5;border-radius:14px;box-shadow:0 1px 2px rgba(16,24,40,.04)}
+.card{padding:20px;margin-bottom:12px}.kp{gap:12px;margin-bottom:12px}.two,.three,.g2{gap:12px}.three{margin-bottom:12px}
+button{border-color:#e2e8f0;font-weight:550;color:#1e293b}button:hover{border-color:#cbd5e1;background:#f8fafc;transform:none}
+button.p{background:var(--ac);border-color:var(--ac);color:#fff;box-shadow:0 1px 2px rgba(37,99,235,.35)}button.p:hover{background:#1d4ed8;border-color:#1d4ed8;filter:none}
+button.d{color:#b42318}button.d:hover{background:#fef3f2;border-color:#fecdca}
+input,select,textarea{border-color:#e2e8f0}
+.k{padding:18px 20px}.k:hover{transform:none;box-shadow:0 1px 2px rgba(16,24,40,.04)}
+.k .l{font-size:11.5px;letter-spacing:.5px;font-weight:650}.k .v{color:var(--ac);font-size:26px;letter-spacing:-.8px;margin:8px 0 2px}.k .s{font-size:12.5px}
+.hero{background:#fff;color:var(--tx);border:1px solid #eaeef5;box-shadow:0 1px 2px rgba(16,24,40,.04);position:relative;overflow:hidden;padding:26px 28px}
+.hero:before{content:"";position:absolute;right:-70px;top:-110px;width:340px;height:340px;border-radius:50%;background:radial-gradient(circle,rgba(37,99,235,.13),transparent 68%);pointer-events:none}
+.hero>*{position:relative}.hero h3{color:var(--tx);font-size:25px}.hero .tip{color:var(--mut);opacity:1}.hero .tip .ic{color:#f59e0b}
+.qa button{background:#fff;border-color:#e2e8f0;color:#1e293b}.qa button:hover{background:#f8fafc;border-color:#cbd5e1;color:#1e293b}
+.tw{box-shadow:0 1px 2px rgba(16,24,40,.04)}.tbl th{background:#fafbfd;border-bottom-color:#eaeef5;color:#667085;font-weight:650}.tbl td{border-bottom-color:#f1f4f9}.tbl tbody tr:hover{background:#fafbff}.tbl tfoot td{background:#fafbfd;border-top-color:#eaeef5}
+.chip{background:#fff;border:1px solid #e2e8f0;color:#475467;font-weight:550}.chip:hover{background:#f8fafc}.chip.on{background:var(--ac);border-color:var(--ac);color:#fff}
+.seg{background:#eef1f6}.seg button{border:0;background:none;color:#667085}.seg button:hover{background:none;color:var(--tx)}.seg button.on{background:#fff;color:var(--tx);box-shadow:0 1px 3px rgba(16,24,40,.12)}
+#hd{border-right-color:#eaeef5}#hd button.nv{color:#475467;font-weight:550}#hd button.nv:hover{background:#f4f6fa;color:var(--tx)}#hd button.nv.on{background:#eef4ff;color:var(--ac);font-weight:650}
+.sec{color:#98a2b3}
+.empty{border-color:#d9e0ec;background:#fff}
+.kc,.kd,.kw,.tgh,.tcol{border-color:#eaeef5}.kd:hover{background:#fafbff}.kd.t{background:#f3f7ff}.tcol.t{background-color:#f8faff}
+.pn{box-shadow:-24px 0 48px -28px rgba(16,24,40,.35)}
+.bd{background:#f2f4f7;color:#344054}
+.stack,.pb{background:#eef1f6}.ring:after{inset:14px}
+.mini,.logoBox{border-color:#eaeef5}
+.act .ib{border-color:transparent;background:transparent;color:#667085}.act .ib:hover{background:#f2f4f7;border-color:transparent;color:var(--tx)}.act .ib.d{color:#98a2b3}.act .ib.d:hover{background:#fef3f2;color:#b42318}
+.kh .seg{margin-left:0;width:100%;display:flex}.kh .seg button{flex:1}.km{font-size:20px}
+.sws input[type=color]{width:30px;height:30px;padding:0;border:3px solid #fff;border-radius:50%;box-shadow:0 0 0 1px #cdd8ea;background:none;appearance:none;-webkit-appearance:none;overflow:hidden;cursor:pointer}
+.sws input[type=color]::-webkit-color-swatch-wrapper{padding:0}.sws input[type=color]::-webkit-color-swatch{border:0;border-radius:50%}.sws input[type=color]::-moz-color-swatch{border:0;border-radius:50%}
+.tile .mut{font-weight:400;color:#667085}
+
+.od{font-size:12px;color:var(--bad);font-weight:650;margin-top:4px}.od.w{color:#b45309}
+/* ===== Telefon ===== */
+html{-webkit-text-size-adjust:100%}body{touch-action:manipulation;-webkit-tap-highlight-color:transparent;overscroll-behavior-y:none}
+#n-mere,#ms{display:none}
+.mi{display:flex;align-items:center;gap:14px;width:100%;min-height:52px;padding:0 14px;border:0;border-radius:12px;background:transparent;font-size:16px;font-weight:600;justify-content:flex-start;text-align:left}.mi:active{background:#eef3ff}.mi .ic{width:22px;height:22px;color:var(--ac)}.mi.out{color:var(--bad)}.mi.out .ic{color:var(--bad)}
+#ms .sh{position:absolute;left:0;right:0;bottom:0;background:#fff;border-radius:20px 20px 0 0;padding:8px 10px calc(14px + env(safe-area-inset-bottom,0px));box-shadow:0 -20px 50px -20px rgba(15,23,42,.45);animation:slideup .28s cubic-bezier(.2,.8,.2,1) both}.gr{width:40px;height:4px;border-radius:4px;background:#d5dce8;margin:4px auto 8px}
+@keyframes slideup{from{transform:translateY(100%)}}
+@media(max-width:800px){
+ #ms{position:fixed;inset:0;z-index:55}#ms.on{display:block}
+ #whoami{display:none}#hd #n-mere{display:flex}#n-leads,#n-okon,#n-udg,#n-ydel,#n-firma{display:none!important}
+ #hd button.nv span{font-size:11px}#hd button.nv .ic{width:23px;height:23px}
+ main{padding:14px 14px 28px}#top{padding:18px 14px 0}#top h2{font-size:23px}#sub{font-size:13px}
+ #acts{width:100%}#acts button{flex:1;padding:10px 8px;min-height:42px}
+ input,select,textarea{font-size:16px}input,select{min-height:42px}
+ button.ib{width:40px;height:40px}.act .ib{width:38px;height:38px}
+ .card{padding:16px}.kp{grid-template-columns:1fr 1fr;gap:10px}.k{padding:14px}.k .v{font-size:21px}.k .l{font-size:10.5px}.k .s{font-size:12px}
+ .hero{padding:18px}.hero h3{font-size:21px}.qa{width:100%}.qa button{flex:1;min-height:42px}
+ .three{grid-template-columns:1fr}.tb{flex-direction:column;align-items:stretch}.sw{max-width:none;min-width:0}
+ .chip{padding:8px 14px;font-size:14px}
+ .pn{width:100%;padding:20px 18px calc(24px + env(safe-area-inset-bottom,0px))}
+ #toast{bottom:calc(86px + env(safe-area-inset-bottom,0px));max-width:calc(100% - 28px);text-align:center}
+ #doc{overflow-x:auto}
+ .g{grid-template-columns:1fr}
+ .tw{border-radius:14px}
+ .tbl.cd{min-width:0}.tbl.cd thead{display:none}.tbl.cd,.tbl.cd tbody{display:block}
+ .tbl.cd tbody tr{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding:14px;border-bottom:1px solid #eef2f8}.tbl.cd tbody tr:last-child{border-bottom:0}
+ .tbl.cd td{display:block;padding:0;border:0;text-align:left}.tbl.cd td.r{text-align:left}
+ .tbl.cd td[data-l]:before{content:attr(data-l)": ";color:var(--mut);font-size:12px}
+ .tbl.cd .act{flex:1 1 100%;display:flex;justify-content:flex-end;align-items:center;gap:2px;flex-wrap:wrap;margin-top:2px;padding-top:8px;border-top:1px dashed #e6ebf3}
+ .tbl.cd1 td:nth-child(2){order:1;flex:1 1 55%;min-width:0}.tbl.cd1 td:nth-child(5){order:2;text-align:right;margin-left:auto}
+ .tbl.cd1 td:nth-child(1){order:3}.tbl.cd1 td:nth-child(3){order:4;color:var(--mut)}.tbl.cd1 td:nth-child(4){order:5;margin-left:auto}.tbl.cd1 td:nth-child(6){order:6}
+ .tbl.cd1 td:nth-child(5) .mut{display:none}
+ .tbl.cd2 td:nth-child(1){order:1;flex:1 1 55%;min-width:0}.tbl.cd2 td:nth-child(4){order:2;text-align:right;margin-left:auto}
+ .tbl.cd2 td:nth-child(2){order:3}.tbl.cd2 td:nth-child(3){order:4}.tbl.cd2 td:nth-child(5){order:5}.tbl.cd2 td:nth-child(6){order:6}
+}
+body.staff [data-o]{display:none!important}
+</style>
+</head>
+<body>
+<div id="app"><aside id="hd" class="noprint" style="display:none"><div class="lg">Tilbud<b>o</b></div><div class="sec">Salg</div><button class="nv" id="n-dash" onclick="go('dash')"><i data-i="dash"></i><span>Dashboard</span></button><button class="nv" id="n-list" onclick="go('list')"><i data-i="doc"></i><span>Dokumenter</span></button><button class="nv" id="n-kund" onclick="go('kund')"><i data-i="users"></i><span>Kunder</span></button><button class="nv" id="n-leads" onclick="go('leads')"><i data-i="chart"></i><span>Leads</span></button><button class="nv" id="n-kal" onclick="go('kal')"><i data-i="cal"></i><span>Kalender</span><em id="kb"></em></button><div class="sec" data-o>Økonomi</div><button class="nv" data-o id="n-okon" onclick="go('okon')"><i data-i="chart"></i><span>Økonomi</span></button><button class="nv" data-o id="n-udg" onclick="go('udg')"><i data-i="receipt"></i><span>Udgifter</span></button><div class="sec" data-o>Opsætning</div><button class="nv" data-o id="n-ydel" onclick="go('ydel')"><i data-i="pkg"></i><span>Ydelser</span></button><button class="nv" data-o id="n-firma" onclick="go('firma')"><i data-i="firm"></i><span>Mit firma</span></button><button class="nv" id="n-mere" onclick="mm()"><i data-i="dots"></i><span>Mere</span></button><div id="whoami" class="mut" style="padding:6px 12px;font-size:12px;word-break:break-all"></div><div class="sp"></div><button class="nv out" onclick="if(sb)sb.auth.signOut().then(function(){location.reload()})"><i data-i="out"></i><span>Log ud</span></button></aside><div id="ms" class="noprint"><div class="ov" onclick="mm()"></div><div class="sh"><div class="gr"></div><button class="mi" onclick="mm();go('leads')"><i data-i="chart"></i>Leads</button><button class="mi" data-o onclick="mm();go('okon')"><i data-i="chart"></i>Økonomi</button><button class="mi" data-o onclick="mm();go('udg')"><i data-i="receipt"></i>Udgifter</button><button class="mi" data-o onclick="mm();go('ydel')"><i data-i="pkg"></i>Ydelser</button><button class="mi" data-o onclick="mm();go('firma')"><i data-i="firm"></i>Mit firma</button><button class="mi out" onclick="if(sb)sb.auth.signOut().then(function(){location.reload()})"><i data-i="out"></i>Log ud</button></div></div>
+<div id="mw"><div id="top" class="noprint" style="display:none"><div><h2 id="ttl"></h2><div id="sub" class="mut"></div></div><span id="acts"></span></div><main id="v"></main></div></div><div id="toast"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>
+var DEMO=false; /* false = fælles Supabase-database (kør schema.sql først). true = kun lokal test i browseren */
+var SB_URL="DIN_SUPABASE_URL",SB_KEY="DIN_ANON_KEY";
+var S,tab='dash',D=null;
+var def={firma:{navn:'',cvr:'',adr:'',tlf:'',mail:'',bet:'Tilbuddet er gyldigt i 30 dage. Betaling 8 dage netto. Priser er ekskl. moms medmindre andet er angivet.'},
+ydel:[{n:'Timeløn, svend',e:'time',p:495},{n:'Opstart og kørsel',e:'stk',p:350},{n:'Materialer (efter forbrug)',e:'stk',p:0}],docs:[],nr:1001};
+var sb=null;try{if(!DEMO)sb=supabase.createClient(SB_URL,SB_KEY)}catch(e){}var U=null,tm,$=function(i){return document.getElementById(i)};
+var V=0,V2=0,fl=0,again=0,B={},LU='[]',ROLE='',TM=[],CL=['docs','kunder','udg','todo','ev','leads'],C1=['docs','kunder','todo','ev','leads'],RESTR=['okon','udg','ydel','firma'];
+function own(){return DEMO||ROLE=='owner'}
+function snap(){CL.forEach(function(c){B[c]=((S&&S[c])||[]).map(function(x){return x.id})})}
+function mrg(Rm,cols){cols.forEach(function(c){var L=S[c]||[],have={},old={};L.forEach(function(x){have[x.id]=1});(B[c]||[]).forEach(function(i){old[i]=1});(Rm[c]||[]).forEach(function(x){if(!have[x.id]&&!old[x.id])L.push(x)});S[c]=L})}
+function put(id,d,v){return sb.from('workspace').update({data:d,version:v+1,updated_at:new Date().toISOString(),updated_by:U.email}).eq('id',id).eq('version',v).select('version')}
+async function flush(){clearTimeout(tm);tm=0;if(DEMO){try{localStorage.setItem('tf',JSON.stringify(S))}catch(e){toast('Kunne ikke gemme: browserens lager er fuldt.')}return}
+ if(!U||!sb||!ROLE)return;if(fl){again=1;return}fl=1;
+ try{for(var t=0;t<4;t++){var d=Object.assign({},S);delete d.udg;var r=await put(1,d,V);
+   if(r.error){toast('Kunne ikke gemme: '+r.error.message);break}
+   if(r.data&&r.data.length){V=r.data[0].version;snap();break}
+   var x=await sb.from('workspace').select('data,version').eq('id',1).single();if(x.error){toast('Kunne ikke hente: '+x.error.message);break}
+   mrg(x.data.data,C1);V=x.data.version}
+  if(own()){for(var t2=0;t2<4;t2++){var u=JSON.stringify(S.udg||[]);if(u==LU)break;var r2=await put(2,{udg:S.udg||[]},V2);
+   if(r2.error){toast('Kunne ikke gemme udgifter: '+r2.error.message);break}
+   if(r2.data&&r2.data.length){V2=r2.data[0].version;LU=u;snap();break}
+   var y=await sb.from('workspace').select('data,version').eq('id',2).single();if(y.error)break;
+   mrg(y.data.data,['udg']);V2=y.data.version}}
+ }catch(e){toast('Kunne ikke gemme: '+(e.message||e))}
+ fl=0;if(again){again=0;flush()}}
+function apply(n){if(!n||fl||tm||D)return;var ch=0;
+ if(n.id==1&&n.version>V){var u=S.udg;S=n.data;if(u)S.udg=u;V=n.version;ch=1}
+ else if(n.id==2&&n.version>V2&&own()){S.udg=n.data.udg||[];V2=n.version;LU=JSON.stringify(S.udg);ch=1}
+ if(!ch)return;snap();var a=document.activeElement;if(!(a&&/INPUT|TEXTAREA|SELECT/.test(a.tagName)))render()}
+function live(){if(DEMO||!sb)return;try{sb.channel('ws').on('postgres_changes',{event:'UPDATE',schema:'public',table:'workspace'},function(p){apply(p.new)}).subscribe()}catch(e){}
+ setInterval(async function(){if(document.hidden||fl||tm||D)return;var x=await sb.from('workspace').select('id,data,version').in('id',[1,2]);(x.data||[]).forEach(apply)},15000)}
+async function loadTeam(){if(!own()||DEMO)return;var r=await sb.from('members').select('email,role').order('email');TM=r.data||[]}
+async function addM(){var e=$('me').value.trim().toLowerCase();if(e.indexOf('@')<1){toast('Skriv en gyldig e-mail');return}var r=await sb.from('members').insert({email:e,role:$('mr').value});if(r.error){toast(r.error.message);return}await loadTeam();render();toast('Medarbejder tilføjet')}
+async function setM(i,role){var m=TM[i];if(m.role=='owner'&&role!='owner'&&TM.filter(function(x){return x.role=='owner'}).length<2){toast('Der skal være mindst én ejer');render();return}var r=await sb.from('members').update({role:role}).eq('email',m.email);if(r.error)toast(r.error.message);await loadTeam();render()}
+async function delM(i){var m=TM[i];if(m.email==U.email.toLowerCase()){toast('Du kan ikke fjerne dig selv');return}if(!confirm('Fjern adgang for '+m.email+'?'))return;await sb.from('members').delete().eq('email',m.email);await loadTeam();render()}
+function teamCard(){if(DEMO||!own())return '';return '<div class="card"><h4>Team og roller</h4><p class="mut">Ejere ser og redigerer alt. Medarbejdere kan arbejde med tilbud, fakturaer, kunder, leads og kalender, men ikke se udgifter og økonomi, ændre firmaindstillinger eller slette kunder og dokumenter. Personen opretter selv en konto med den e-mail, du tilføjer.</p><table class="tbl"><tbody>'+TM.map(function(m,i){return '<tr><td>'+esc(m.email)+'</td><td><select onchange="setM('+i+',this.value)"><option value="owner"'+(m.role=='owner'?' selected':'')+'>Ejer</option><option value="staff"'+(m.role=='staff'?' selected':'')+'>Medarbejder</option></select></td><td class="r"><button class="ib d" title="Fjern" onclick="delM('+i+')">'+ic('trash')+'</button></td></tr>'}).join('')+'</tbody></table><div class="row" style="margin-top:12px;justify-content:flex-start"><input id="me" type="email" placeholder="e-mail@firma.dk" style="max-width:260px"><select id="mr" style="width:150px"><option value="staff">Medarbejder</option><option value="owner">Ejer</option></select><button class="p" onclick="addM()">'+ic('plus')+'Tilføj</button></div></div>'}
+function noAccess(){$('hd').style.display='none';$('top').style.display='none';$('v').innerHTML='<div class="card" style="max-width:420px;margin:40px auto"><h3 style="margin-top:0">Ingen adgang</h3><p class="mut">'+esc(U.email)+' er ikke tilføjet som medarbejder. Bed ejeren om at invitere dig.</p><button onclick="sb.auth.signOut().then(function(){location.reload()})">Log ud</button></div>'}
+function sv(){clearTimeout(tm);tm=setTimeout(flush,DEMO?250:600)}
+window.addEventListener('beforeunload',function(){if(tm)flush()});document.addEventListener('visibilitychange',function(){if(document.hidden&&tm)flush()});
+async function boot(){try{await boot0()}catch(e){$('hd').style.display='none';$('top').style.display='none';$('v').innerHTML='<div class="empty"><h3>Kunne ikke starte appen</h3><p class="mut">'+esc(e.message||e)+'<br>Tjek Supabase-URL og nøgle øverst i filen, eller sæt DEMO=true.</p></div>'}}
+async function boot0(){if(!DEMO&&!sb)throw new Error('Supabase er ikke sat op (URL/nøgle mangler eller er ugyldig).');
+ if(DEMO){try{S=JSON.parse(localStorage.getItem('tf')||'null')}catch(e){}if(!S||!Array.isArray(S.docs)||!S.firma||!Array.isArray(S.ydel))S=JSON.parse(JSON.stringify(def));return render()}
+ var q=new URLSearchParams(location.search).get('t');if(q)return pub(q);
+ sb.auth.onAuthStateChange(function(ev){if(ev=='PASSWORD_RECOVERY'){var p=prompt('Vælg ny adgangskode (mindst 8 tegn):');if(p&&p.length>=8)sb.auth.updateUser({password:p}).then(function(r){toast(r.error?r.error.message:'Adgangskode opdateret')})}});
+ var r=await sb.auth.getSession();U=r.data.session&&r.data.session.user;if(!U)return loginView();
+ var m=await sb.from('members').select('role').eq('email',U.email.toLowerCase()).maybeSingle();if(m.error)throw m.error;if(!m.data)return noAccess();ROLE=m.data.role;
+ var x=await sb.from('workspace').select('id,data,version').in('id',[1,2]);if(x.error)throw x.error;
+ var r1=x.data.filter(function(z){return z.id==1})[0],r2=x.data.filter(function(z){return z.id==2})[0];
+ if(r1){S=r1.data||JSON.parse(JSON.stringify(def));V=r1.version}
+ else{if(!own())throw new Error('Der er ingen data endnu. Bed ejeren om at logge ind først.');var old=null;try{old=JSON.parse(localStorage.getItem('tf')||'null')}catch(e){}S=(old&&Array.isArray(old.docs)&&old.firma)?old:JSON.parse(JSON.stringify(def));
+  var d0=Object.assign({},S);delete d0.udg;var w=await sb.from('workspace').insert({id:1,data:d0,version:1,updated_by:U.email});if(w.error)throw w.error;V=1}
+ if(own()){if(r2){S.udg=r2.data.udg||[];V2=r2.version}else{var lg=S.udg||[];var w2=await sb.from('workspace').insert({id:2,data:{udg:lg},version:1,updated_by:U.email});if(w2.error)throw w2.error;S.udg=lg;V2=1}
+  LU=JSON.stringify(S.udg||[]);if(r1&&r1.data&&r1.data.udg)sv()}else delete S.udg;
+ snap();await loadTeam();await sync();live();render()}
+function loginView(msg){$('hd').style.display='none';$('top').style.display='none';$('v').innerHTML='<div class="card" style="max-width:380px;margin:40px auto"><h2 style="margin-top:0">Tilbud<span style="color:var(--ac)">o</span></h2><p class="mut">Log ind med din e-mail. Kun inviterede medarbejdere får adgang.</p><label>E-mail</label><input id="em" type="email" autocomplete="username"><label style="margin-top:8px">Adgangskode</label><input id="pw" type="password" autocomplete="current-password" onkeydown="if(event.key===\'Enter\')auth(0)"><div class="row" style="margin-top:12px"><button class="p" onclick="auth(0)">Log ind</button><button onclick="auth(1)">Opret konto</button></div><p style="margin:12px 0 0"><a href="#" class="mut" onclick="forgot();return false">Glemt adgangskode?</a></p><p id="msg" class="mut">'+(msg||'')+'</p></div>'}
+async function forgot(){var e=$('em').value.trim();if(!e){$('msg').textContent='Skriv din e-mail først.';return}var r=await sb.auth.resetPasswordForEmail(e,{redirectTo:location.origin+location.pathname});$('msg').textContent=r.error?r.error.message:'Vi har sendt et link til at vælge ny adgangskode.'}
+async function auth(n){var c={email:$('em').value.trim().toLowerCase(),password:$('pw').value};if(!c.email||c.password.length<6){$('msg').textContent='Skriv e-mail og en adgangskode på mindst 6 tegn.';return}var r=n?await sb.auth.signUp(c):await sb.auth.signInWithPassword(c);
+ if(r.error){$('msg').textContent=r.error.message;return}
+ if(!r.data.session){$('msg').textContent='Tjek din mail for at bekræfte kontoen, og log så ind.';return}boot()}
+async function sync(){var r=await sb.from('links').select('token,status');(r.data||[]).forEach(function(l){S.docs.forEach(function(d){if(d.tok==l.token&&d.st!='Accepteret'&&(l.status=='Set'||l.status=='Accepteret'))d.st=l.status})})}
+async function share(){if(!can('link')){up('link');return}if(DEMO){toast('Del link kræver Supabase. Sæt DEMO=false, når du udgiver.');return}if(!D.tok)D.tok=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():Math.random().toString(36).slice(2)+Date.now().toString(36)+Math.random().toString(36).slice(2);
+ var r=await sb.from('links').upsert({token:D.tok,user_id:U.id,doc:D,firma:S.firma});if(r.error){alert(r.error.message);return}
+ if(D.st=='Kladde')D.st='Sendt';sv();var u=location.origin+location.pathname+'?t='+D.tok;
+ try{await navigator.clipboard.writeText(u);toast('Link kopieret')}catch(e){prompt('Kopiér linket:',u)}}
+async function pub(t){$('hd').style.display='none';$('top').style.display='none';var r=await sb.rpc('get_link',{t:t});
+ if(r.error||!r.data){$('v').innerHTML='<div class="card">Linket er ugyldigt.</div>';return}
+ D=r.data.doc;S={firma:r.data.firma};var h=vPrev();h=h.slice(h.indexOf('<div id="doc">'));
+ $('v').innerHTML='<div class="row noprint" style="margin-bottom:12px"><span class="mut">Status: '+r.data.status+'</span><span>'+(D.type=='Tilbud'&&r.data.status!='Accepteret'?'<button class="p" onclick="acc(\''+t+'\')">Accepter tilbud</button> ':'')+'<button onclick="window.print()">Print / PDF</button></span></div>'+h}
+async function acc(t){await sb.rpc('accept_link',{t:t});pub(t)}
+function kr(n){return (n||0).toLocaleString('da-DK',{minimumFractionDigits:2,maximumFractionDigits:2})+' kr.'}
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function sum(d){var L0=0;d.l.forEach(function(x){L0+=(+x.a||0)*(+x.p||0)});var r=L0*Math.min(100,Math.max(0,+d.rabat||0))/100,L=L0-r;if(d.moms=='incl')return{n:L/1.25,m:L-L/1.25,t:L,r:r};if(d.moms=='none')return{n:L,m:0,t:L,r:r};return{n:L,m:L*.25,t:L*1.25,r:r}}
+function go(t){if(!own()&&RESTR.indexOf(t)>-1)t='dash';tab=t;D=null;render()}
+function nextNr(){return S.docs.reduce(function(m,d){return Math.max(m,+d.nr||0)},1000)+1}
+function nyt(type){D={id:Date.now(),type:type,nr:nextNr(),dato:nowS(),dage:(type=='Faktura'?(+S.firma.fdage||8):(+S.firma.tdage||30)),k:{n:'',a:'',m:''},l:[],moms:S.firma.moms||(S.docs.length&&S.docs[S.docs.length-1].moms)||'excl',st:'Kladde',note:''};tab='edit';render()}
+function mm(){$('ms').classList.toggle('on')}
+function render(){if(!own()&&RESTR.indexOf(tab)>-1)tab='dash';document.body.classList.toggle('staff',!own());var wi=$('whoami');if(wi)wi.textContent=U?U.email+' · '+(own()?'Ejer':'Medarbejder'):'';$('ms').classList.remove('on');$('n-mere').className='nv'+(['leads','okon','udg','ydel','firma'].indexOf(tab)>-1?' on':'');S.kunder=S.kunder||[];S.pakker=S.pakker||[];if(S.docs)migr();S.ev=S.ev||[];S.udg=S.udg||[];S.todo=S.todo||[];S.leads=S.leads||[];S.plan=S.plan||'pro';$('hd').style.display='';
+ $('top').style.display='';$('ttl').textContent={dash:'Dashboard',leads:'Leads',list:'Dokumenter',kund:'Kunder',kdet:'Kunde',ydel:'Ydelser',firma:'Mit firma',kal:'Kalender',okon:'Økonomi',udg:'Udgifter',edit:'Nyt dokument',prev:'Dokument'}[tab]||'';$('sub').textContent={dash:'Overblik over salg, kunder og økonomi',leads:'Pipeline: følg op og vind nye kunder',list:'Alle tilbud og fakturaer samlet ét sted',kund:'Dine kunder og deres værdi',kdet:'Historik, noter og dokumenter',okon:'Omsætning, udgifter og resultat',udg:'Registrér og følg dine omkostninger',ydel:'Dine faste ydelser, priser og pakker',firma:'Firmaoplysninger og abonnement',kal:'Møder, opfølgning og forfaldsdatoer samlet ét sted'}[tab]||'';$('acts').innerHTML=tab=='kal'?'<button onclick="icsAll()">'+ic('dl')+'Hent .ics</button><button class="p" onclick="openEv()">'+ic('plus')+'Ny begivenhed</button>':tab=='udg'?'<button class="p" onclick="openUdg()">'+ic('plus')+'Ny udgift</button>':tab=='kdet'?'<button onclick="go(\'kund\')">'+ic('chl')+'Alle kunder</button><button onclick="nytKid(\'Faktura\',KID)">'+ic('plus')+'Faktura</button><button class="p" onclick="nytKid(\'Tilbud\',KID)">'+ic('plus')+'Nyt tilbud</button>':tab=='kund'?'<button onclick="nyt(\'Tilbud\')">'+ic('plus')+'Nyt tilbud</button><button class="p" onclick="openK()">'+ic('plus')+'Ny kunde</button>':'<button onclick="nyt(\'Faktura\')">'+ic('plus')+'Faktura</button><button class="p" onclick="nyt(\'Tilbud\')">'+ic('plus')+'Nyt tilbud</button>';['dash','list','kund','kal','okon','udg','ydel','firma'].forEach(function(t){$('n-'+t).className='nv'+(tab==t||(t=='kund'&&tab=='kdet')||(t=='list'&&(tab=='edit'||tab=='prev'))?' on':'')});
+ var v=document.getElementById('v');v.className=_lt!=tab?'anim':'';_lt=tab;
+ if(tab=='kal')v.innerHTML=vKal();else if(tab=='okon')v.innerHTML=vOkon();else if(tab=='udg')v.innerHTML=vUdg();else if(tab=='dash')v.innerHTML=vDash();else if(tab=='list')v.innerHTML=vList();else if(tab=='leads')v.innerHTML=vLeads();else if(tab=='kund')v.innerHTML=vKund();else if(tab=='kdet')v.innerHTML=vKdet();else if(tab=='ydel')v.innerHTML=vYdel();else if(tab=='firma')v.innerHTML=vFirma();else if(tab=='edit'){v.innerHTML=vEdit();lines();tots()}else v.innerHTML=vPrev();if(tab=='dash'||tab=='kund'||tab=='okon'||tab=='udg')cnt();document.querySelectorAll('button.ib[title]').forEach(function(b){b.setAttribute('aria-label',b.title)});badge();kPost();
+}
+var P='month',MN=['jan','feb','mar','apr','maj','jun','jul','aug','sep','okt','nov','dec'],PL={day:'dag',week:'uge',month:'måned',year:'år'};
+function nowS(){var n=new Date();return n.getFullYear()+'-'+('0'+(n.getMonth()+1)).slice(-2)+'-'+('0'+n.getDate()).slice(-2)}
+function pk(s,p){var d=new Date(s+'T00:00:00Z');if(p=='day')return s;if(p=='month')return s.slice(0,7);if(p=='year')return s.slice(0,4);d.setUTCDate(d.getUTCDate()-((d.getUTCDay()+6)%7));return d.toISOString().slice(0,10)}
+function back(p,i){var d=new Date(nowS()+'T00:00:00Z');if(p=='day')d.setUTCDate(d.getUTCDate()-i);else if(p=='week')d.setUTCDate(d.getUTCDate()-7*i);else if(p=='month'){d.setUTCDate(1);d.setUTCMonth(d.getUTCMonth()-i)}else d.setUTCFullYear(d.getUTCFullYear()-i);return d.toISOString().slice(0,10)}
+function lbl(k,p){return p=='month'?MN[+k.slice(5,7)-1]:p=='year'?k:k.slice(8)+'/'+k.slice(5,7)}
+function age(d){return Math.floor((new Date(nowS()+'T00:00:00Z')-new Date(d.dato+'T00:00:00Z'))/864e5)}
+var _ni=0;function nid(){return Date.now()*1000+(++_ni%1000)}
+function migr(){S.kunder=S.kunder||[];var ch=0,by={};S.kunder.forEach(function(k){if(!k.id){k.id=nid();ch=1}if(!k.log){k.log=[];ch=1}by[(k.n||'').trim().toLowerCase()]=k});
+ S.docs.slice().sort(function(a,b){return a.dato<b.dato?-1:a.dato>b.dato?1:0}).forEach(function(d){var l=(d.k.n||'').trim().toLowerCase();if(!l)return;var k=d.kid?S.kunder.filter(function(x){return x.id==d.kid})[0]:null;
+  if(!k)k=by[l];if(!k){k={id:nid(),n:d.k.n.trim(),a:'',m:'',tlf:'',cvr:'',d:d.dato,log:[],_f:1};S.kunder.push(k);by[l]=k}
+  if(d.kid!=k.id){d.kid=k.id;ch=1}
+  if(k._f){k.a=d.k.a||k.a;k.m=d.k.m||k.m}else{if(!k.a&&d.k.a){k.a=d.k.a;ch=1}if(!k.m&&d.k.m){k.m=d.k.m;ch=1}}});
+ S.kunder.forEach(function(k){if(k._f){delete k._f;ch=1}});if(ch)sv()}
+function lnk(){var l=D.k.n.trim().toLowerCase(),k=D.kid?S.kunder.filter(function(x){return x.id==D.kid})[0]:null;if(!k||k.n.trim().toLowerCase()!=l)k=S.kunder.filter(function(x){return x.n.trim().toLowerCase()==l})[0];
+ if(!k){k={id:nid(),n:D.k.n.trim(),a:D.k.a||'',m:D.k.m||'',tlf:'',cvr:'',d:nowS(),log:[]};S.kunder.push(k)}else{if(!k.a&&D.k.a)k.a=D.k.a;if(!k.m&&D.k.m)k.m=D.k.m}D.kid=k.id}
+function custs(){var m={};S.kunder.forEach(function(k){m[k.id]={sid:k.id,n:k.n,a:k.a||'',m:k.m||'',tlf:k.tlf||'',cvr:k.cvr||'',c:0,v:0,acc:0,last:'',first:k.d||'9999',log:k.log||[]}});
+ S.docs.forEach(function(d){var c=m[d.kid];if(!c)return;var n=sum(d).n;c.c++;c.v+=n;if(d.st=='Accepteret'||d.st=='Betalt')c.acc+=n;if(d.dato>=c.last)c.last=d.dato;if(d.dato<c.first)c.first=d.dato});
+ return Object.keys(m).map(function(k){return m[k]}).sort(function(a,b){return (b.v-a.v)||((b.sid||0)-(a.sid||0))})}
+function setP(p){P=p;render()}
+var KO=null;
+var KQ='';
+function kmatch(c){return !KQ||(c.n+' '+c.m+' '+c.tlf+' '+c.a+' '+c.cvr).toLowerCase().indexOf(KQ)>-1}
+function odays(d){return Math.floor((new Date(nowS()+'T00:00:00Z')-new Date(due(d)+'T00:00:00Z'))/864e5)}
+function overdue(d){return d.type=='Faktura'&&d.st=='Sendt'&&odays(d)>0}
+function fage(d){return age({dato:d.fu&&d.fu>d.dato?d.fu:d.dato})}
+function stale(d){return d.type=='Tilbud'&&(d.st=='Sendt'||d.st=='Set')&&fage(d)>=5}
+function logK(kid,tx){var k=S.kunder.filter(function(x){return x.id==kid})[0];if(!k)return;k.log=k.log||[];k.log.unshift({id:nid(),t:'Mail',tx:tx,dt:new Date().toISOString()})}
+function mto(d,sub,b){location.href='mailto:'+encodeURIComponent(d.k.m||'')+'?subject='+encodeURIComponent(sub)+'&body='+encodeURIComponent(b)}
+function rykker(id){var d=S.docs.filter(function(x){return x.id==id})[0];if(!d)return;var f=S.firma,n=(d.ryk||0)+1,m=sum(d);
+ var b='Hej '+d.k.n+',\n\nVi har endnu ikke modtaget betaling for faktura nr. '+d.nr+' på '+kr(m.t)+', som forfaldt den '+due(d)+'.\n\nVil du venligst betale snarest'+(f.bank?' til '+f.bank:'')+'. Har du allerede betalt, kan du se bort fra denne mail.\n\nMed venlig hilsen\n'+f.navn+'\n'+f.tlf;
+ d.ryk=n;d.rykd=nowS();logK(d.kid,'Rykker '+n+' sendt for faktura '+d.nr);sv();render();mto(d,'Påmindelse: faktura '+d.nr+' fra '+f.navn,b)}
+function followUp(id){var d=S.docs.filter(function(x){return x.id==id})[0];if(!d)return;var f=S.firma,m=sum(d);
+ var b='Hej '+d.k.n+',\n\nJeg vil blot høre, om du har haft mulighed for at se på tilbud nr. '+d.nr+' på '+kr(m.t)+' inkl. moms.'+(d.tok?'\n\nDu kan se og acceptere det her: '+location.origin+location.pathname+'?t='+d.tok:'')+'\n\nSig endelig til, hvis du har spørgsmål eller ønsker ændringer.\n\nMed venlig hilsen\n'+f.navn+'\n'+f.tlf;
+ d.fu=nowS();logK(d.kid,'Opfølgning sendt på tilbud '+d.nr);sv();render();mto(d,'Opfølgning på tilbud '+d.nr+' fra '+f.navn,b)}
+function attn(only){var o=S.docs.filter(overdue).sort(function(a,b){return odays(b)-odays(a)}),t=only?[]:S.docs.filter(stale).sort(function(a,b){return fage(b)-fage(a)});if(!o.length&&!t.length)return '';
+ var tot=o.reduce(function(n,d){return n+sum(d).t},0),rows=o.concat(t).slice(0,6).map(function(d){var ov=overdue(d);return li('<b>'+esc(d.k.n||'Uden kunde')+'</b> <span class="mut">'+d.type+' '+d.nr+'</span><div class="od'+(ov?'':' w')+'">'+(ov?'Forfalden '+odays(d)+' dage':'Ingen svar i '+fage(d)+' dage')+'</div>','<b>'+kr(sum(d).t)+'</b> <button onclick="'+(ov?'rykker':'followUp')+'('+d.id+')">'+ic('mail')+(ov?'Rykker':'Følg op')+'</button>')}).join('');
+ return '<div class="card" style="border-color:#fecaca;background:#fffafa"><div class="row"><b>Kræver handling</b><span class="mut">'+(o.length?o.length+(o.length>1?' forfaldne':' forfalden')+' ('+kr(tot)+')':'')+(o.length&&t.length?' · ':'')+(t.length?t.length+(t.length>1?' tilbud':' tilbud')+' uden svar':'')+'</span></div>'+rows+'</div>'}
+function dl(name,txt){var a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+txt],{type:'text/csv;charset=utf-8'}));a.download=name;document.body.appendChild(a);a.click();a.remove()}
+function exK(){if(!can('csv')){up('csv');return}var q=function(x){x=String(x==null?'':x);return /[;"\n]/.test(x)?'"'+x.replace(/"/g,'""')+'"':x},R=[['Navn','E-mail','Telefon','Adresse','CVR','Dokumenter','Værdi ekskl. moms']];custs().forEach(function(c){R.push([c.n,c.m,c.tlf,c.a,c.cvr,c.c,c.v.toFixed(2).replace('.',',')])});dl('kunder.csv',R.map(function(r){return r.map(q).join(';')}).join('\r\n'))}
+function pcsv(t){var l=t.split('\n')[0],d=(l.split(';').length>=l.split(',').length)?';':',',r=[],row=[],c='',q=0;
+ for(var i=0;i<t.length;i++){var ch=t[i];if(q){if(ch=='"'){if(t[i+1]=='"'){c+='"';i++}else q=0}else c+=ch}else if(ch=='"')q=1;else if(ch==d){row.push(c);c=''}else if(ch=='\n'||ch=='\r'){if(ch=='\r'&&t[i+1]=='\n')i++;row.push(c);c='';if(row.some(function(x){return x.trim()}))r.push(row);row=[]}else c+=ch}
+ row.push(c);if(row.some(function(x){return x.trim()}))r.push(row);return r}
+function impK(txt){var R=pcsv(txt);if(!R.length){toast('Filen er tom');return}var h=R[0].map(function(x){return x.trim().toLowerCase()}),hd=h.some(function(x){return /^(navn|name|firma|kunde)/.test(x)}),fi=function(re,df){var k=-1;h.forEach(function(x,i){if(k<0&&re.test(x))k=i});return hd?k:df},
+ ci={n:fi(/^(navn|name|firma|kunde)/,0),m:fi(/mail/,1),t:fi(/tlf|telefon|phone|mobil/,2),a:fi(/adr/,3),c:fi(/cvr/,4)},ex={},add=0,sk=0;
+ S.kunder.forEach(function(k){ex[k.n.trim().toLowerCase()]=1});
+ R.slice(hd?1:0).forEach(function(r){var g=function(i){return i>-1&&r[i]!=null?String(r[i]).trim():''},n=g(ci.n);if(!n||ex[n.toLowerCase()]){sk++;return}ex[n.toLowerCase()]=1;S.kunder.push({id:nid(),n:n,m:g(ci.m),tlf:g(ci.t),a:g(ci.a),cvr:g(ci.c),d:nowS(),log:[]});add++});
+ sv();render();toast(add+(add==1?' kunde importeret':' kunder importeret')+(sk?' · '+sk+' sprunget over':''))}
+function imK(inp){var f=inp.files[0];if(!f)return;var r=new FileReader();r.onload=function(){var t=r.result;if(t.indexOf('\ufffd')>-1){var r2=new FileReader();r2.onload=function(){impK(r2.result)};r2.readAsText(f,'windows-1252')}else impK(t)};r.readAsText(f);inp.value=''}
+
+function openK(i){KO=i==null?{}:Object.assign({idx:i},custs()[i]);render();setTimeout(function(){var e=$('kn');if(e)e.focus()},60)}
+function kDr(){if(!KO)return '';var c=KO,f=function(id,l,v,ph,t){return '<div class="fld"><label>'+l+'</label><input id="'+id+'" type="'+(t||'text')+'" value="'+esc(v||'')+'" placeholder="'+(ph||'')+'" onkeydown="if(event.key==\'Enter\')saveK()"></div>'};
+ return '<div id="dr"><div class="ov" onclick="KO=null;render()"></div><div class="pn"><div class="row" style="margin-bottom:18px"><h3 style="margin:0;font-size:21px;letter-spacing:-.5px">'+(c.idx!=null?'Redigér kunde':'Ny kunde')+'</h3><button class="ib" title="Luk" onclick="KO=null;render()">'+ic('x')+'</button></div>'+f('kn','Navn',c.n,'Fx Hansen & Søn ApS')+f('km','E-mail',c.m,'kunde@mail.dk','email')+f('kt','Telefon',c.tlf,'12 34 56 78','tel')+f('ka','Adresse',c.a,'Vej 1, 1234 By')+f('kc','CVR (valgfrit)',c.cvr,'12345678')+'<div class="row" style="margin-top:8px"><button onclick="KO=null;render()">Annullér</button><button class="p" onclick="saveK()">'+ic('plus')+(c.idx!=null?'Gem kunde':'Opret kunde')+'</button></div></div></div>'}
+function saveK(){var n=$('kn').value.trim();if(!n){toast('Skriv kundens navn');return}var lo=n.toLowerCase(),old=KO.idx!=null?KO.n:null,ol=old?old.trim().toLowerCase():null;
+ if(custs().some(function(c){return c.n.trim().toLowerCase()==lo&&c.sid!=KO.sid})){toast('Der findes allerede en kunde med det navn');return}
+ var o={n:n,m:$('km').value.trim(),tlf:$('kt').value.trim(),a:$('ka').value.trim(),cvr:$('kc').value.trim()};S.kunder=S.kunder||[];
+ var ex=KO.sid?S.kunder.filter(function(x){return x.id==KO.sid})[0]:null;
+ if(ex)Object.assign(ex,o);else S.kunder.push(Object.assign({id:nid(),d:nowS(),log:[]},o));
+ if(old&&ol!=lo){S.docs.forEach(function(d){if(d.kid==KO.sid||d.k.n.trim().toLowerCase()==ol)d.k.n=n});(S.ev||[]).forEach(function(e){if((e.c||'').trim().toLowerCase()==ol)e.c=n})}
+ KO=null;sv();render();toast(old?'Kunde gemt':'Kunde oprettet')}
+function delK(id){if(!own()){toast('Kun ejeren kan slette');return}if(confirm('Slet kunden?')){S.kunder=S.kunder.filter(function(x){return x.id!=id});sv();if(tab=='kdet')tab='kund';render()}}
+function pickK(i){if(i==='')return;var c=custs()[+i];D.k={n:c.n,a:c.a,m:c.m};D.kid=c.sid;render()}
+function li(a,b){return '<div class="li"><div>'+a+'</div><div class="r">'+b+'</div></div>'}
+var KID=null;
+function kd(id){KID=id;tab='kdet';D=null;render()}
+var LT=['Note','Opkald','Møde','Mail'];
+function addLog(){var x=$('lx').value.trim();if(!x){toast('Skriv en note');return}var k=S.kunder.filter(function(z){return z.id==KID})[0];if(!k)return;k.log=k.log||[];k.log.unshift({id:nid(),t:$('lt').value,tx:x,dt:new Date().toISOString()});sv();render();toast('Note gemt')}
+function delLog(id){if(!confirm('Slet noten?'))return;var k=S.kunder.filter(function(z){return z.id==KID})[0];if(!k)return;k.log=k.log.filter(function(l){return l.id!=id});sv();render()}
+function fdt(s){var d=new Date(s);return d.toLocaleString('da-DK',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})}
+function evK(n){tab='kal';EO={d:nowS(),tm:'',c:n};render()}
+function vKdet(){var all=custs(),ix=-1;all.forEach(function(x,i){if(x.sid==KID)ix=i});if(ix<0)return '<div class="empty">'+ic('users')+'<h3>Kunden findes ikke</h3><button class="p" onclick="go(\'kund\')">Til kunder</button></div>';
+ var c=all[ix],ds=S.docs.filter(function(d){return d.kid==c.sid}).sort(function(a,b){return a.dato<b.dato?1:a.dato>b.dato?-1:0}),
+ un=ds.filter(function(d){return d.type=='Faktura'&&d.st=='Sendt'}).reduce(function(n,d){return n+sum(d).t},0),
+ nl=c.n.trim().toLowerCase(),es=(S.ev||[]).filter(function(e){return (e.c||'').trim().toLowerCase()==nl}).sort(function(a,b){return a.d<b.d?1:-1}),
+ f=function(l,v){return '<div><div class="mut" style="font-size:12px">'+l+'</div><div>'+(v||'<span class="mut">–</span>')+'</div></div>'},
+ lg=c.log.length?c.log.map(function(l){return li('<span class="tag">'+esc(l.t)+'</span> <span class="mut">'+fdt(l.dt)+'</span><div style="margin-top:5px;white-space:pre-wrap">'+esc(l.tx)+'</div>','<button class="ib d" title="Slet note" onclick="delLog('+l.id+')">'+ic('trash')+'</button>')}).join(''):'<p class="mut">Ingen noter endnu. Skriv fx et opkald eller aftale.</p>';
+ return '<div class="card"><div class="row"><div class="who"><span class="av" style="width:52px;height:52px;font-size:17px">'+esc(ini(c.n))+'</span><div><b style="font-size:20px;letter-spacing:-.4px">'+esc(c.n)+'</b><div class="mut">Kunde siden '+(c.first<'9999'?c.first:'–')+'</div></div></div><span><button onclick="openK('+ix+')">'+ic('edit')+'Redigér</button>'+(!c.c?' <button class="d" onclick="delK('+c.sid+')">'+ic('trash')+'Slet</button>':'')+'</span></div>'+
+ '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-top:16px">'+f('E-mail',c.m?'<a href="mailto:'+esc(c.m)+'">'+esc(c.m)+'</a>':'')+f('Telefon',c.tlf?'<a href="tel:'+esc(c.tlf)+'">'+esc(c.tlf)+'</a>':'')+f('Adresse',esc(c.a))+f('CVR',esc(c.cvr))+'</div></div>'+
+ '<div class="kp"><div class="card k"><div class="l">Dokumenter</div><div class="v">'+c.c+'</div><div class="s">tilbud og fakturaer</div></div><div class="card k"><div class="l">Samlet værdi</div><div class="v">'+kr(c.v)+'</div><div class="s">ekskl. moms</div></div><div class="card k"><div class="l">Godkendt</div><div class="v">'+kr(c.acc)+'</div><div class="s">accepteret eller betalt</div></div><div class="card k"><div class="l">Udestående</div><div class="v">'+kr(un)+'</div><div class="s">ubetalte fakturaer</div></div></div>'+
+ '<div class="two"><div class="card"><b>Noter og aktivitet</b><div class="g2" style="margin:10px 0 8px;grid-template-columns:130px 1fr"><select id="lt">'+LT.map(function(t){return '<option>'+t+'</option>'}).join('')+'</select><span></span></div><textarea id="lx" rows="3" placeholder="Fx ringede, vil have svar fredag" style="margin-bottom:8px"></textarea><div class="row" style="margin-bottom:10px"><span></span><button class="p" onclick="addLog()">'+ic('plus')+'Gem note</button></div>'+lg+'</div>'+
+ '<div><div class="card"><b>Dokumenter</b><div style="margin-top:6px">'+(ds.length?ds.map(function(d){return li('<b>'+d.type+' '+d.nr+'</b> <span class="tag st-'+d.st+'">'+d.st+'</span>'+(overdue(d)?' <span class="od" style="display:inline">Forfalden</span>':'')+'<div class="mut">'+d.dato+'</div>','<b>'+kr(sum(d).t)+'</b> <button onclick="prev('+d.id+')">Åbn</button>')}).join(''):'<p class="mut">Ingen dokumenter endnu.</p>')+'</div></div>'+
+ '<div class="card"><div class="row"><b>Begivenheder</b><button onclick="evK(\''+esc(c.n).replace(/'/g,"\\'")+'\')">'+ic('plus')+'Ny</button></div><div style="margin-top:6px">'+(es.length?es.map(function(e){return li('<b>'+esc(e.t)+'</b><div class="mut">'+e.d+(e.tm?' kl. '+e.tm:'')+'</div>','<button onclick="tab=\'kal\';kDay(\''+e.d+'\')">Åbn</button>')}).join(''):'<p class="mut">Ingen begivenheder.</p>')+'</div></div></div></div>'+kDr()}
+function nytK(i){var c=custs()[i];nyt('Tilbud');D.k={n:c.n,a:c.a,m:c.m};D.kid=c.sid;render()}
+function nytKid(t,id){var c=custs().filter(function(x){return x.sid==id})[0];if(!c)return;nyt(t);D.k={n:c.n,a:c.a,m:c.m};D.kid=c.sid;render()}
+function chips(){return '<div class="row" style="align-items:flex-start">'+chips0()+'<button class="chip" onclick="exportCsv()">'+ic('doc')+'Eksportér CSV</button></div>'}
+function chips0(){return '<div style="display:flex;flex-wrap:wrap">'+['Alle','Tilbud','Faktura','Kladde','Sendt','Set','Accepteret','Afvist','Betalt','Forfaldne','Følg op'].map(function(x){return '<button class="chip'+(F==x?' on':'')+'" onclick="F=\''+x+'\';render()">'+x+'</button>'}).join('')+'</div>'}
+function vKund(){return vKund0()+kDr()}
+function vKund0(){var ks=custs();if(!ks.length)return '<div class="empty">'+ic('users')+'<h3>Ingen kunder endnu</h3><p class="mut">Opret din første kunde, så er de klar til både tilbud og fakturaer.</p><button class="p" onclick="openK()">'+ic('plus')+'Ny kunde</button> <button onclick="if(can(\'csv\'))$(\'kfile\').click();else up(\'csv\')">Importér CSV</button><input type="file" id="kfile" accept=".csv,text/csv,text/plain" style="display:none" onchange="imK(this)"></div>';
+ var tot=ks.reduce(function(n,c){return n+c.v},0),ac=ks.reduce(function(n,c){return n+c.acc},0);
+ return '<div class="kp"><div class="card k"><div class="l">Kunder</div><div class="v">'+ks.length+'</div><div class="s">i alt</div></div><div class="card k"><div class="l">Samlet værdi</div><div class="v">'+kr(tot)+'</div><div class="s">ekskl. moms</div></div><div class="card k"><div class="l">Godkendt</div><div class="v">'+kr(ac)+'</div><div class="s">accepteret eller betalt</div></div><div class="card k"><div class="l">Gns. pr. kunde</div><div class="v">'+kr(tot/ks.length)+'</div><div class="s">ekskl. moms</div></div></div>'+
+ '<div class="tb"><div class="sw">'+ic('search')+'<input id="kq" placeholder="Søg på navn, mail, telefon eller adresse" value="'+esc(KQ)+'" oninput="KQ=this.value.toLowerCase();render();var e=$(\'kq\');e.focus();e.setSelectionRange(99,99)"></div><button onclick="exK()">'+ic('doc')+'Eksportér CSV</button><button onclick="if(can(\'csv\'))$(\'kfile\').click();else up(\'csv\')">'+ic('plus')+'Importér CSV</button><input type="file" id="kfile" accept=".csv,text/csv,text/plain" style="display:none" onchange="imK(this)"></div><div class="tw"><table class="tbl cd cd2"><thead><tr><th>Kunde</th><th>Dokumenter</th><th>Seneste</th><th class="r">Værdi</th><th class="r">Godkendt</th><th></th></tr></thead><tbody>'+ks.map(function(c,i){if(!kmatch(c))return '';return '<tr><td><div class="who" style="cursor:pointer" onclick="kd('+c.sid+')"><span class="av">'+esc(ini(c.n))+'</span><div><b>'+esc(c.n)+'</b><div class="mut">'+esc([c.m,c.tlf,c.a].filter(Boolean).join(' · ')||'Ingen kontaktoplysninger')+'</div></div></div></td><td data-l="Dokumenter">'+c.c+'</td><td data-l="Seneste">'+(c.last||'–')+'</td><td class="r"><b>'+kr(c.v)+'</b></td><td class="r" data-l="Godkendt">'+kr(c.acc)+'</td><td class="r act">'+(c.m?'<a href="mailto:'+esc(c.m)+'"><button class="ib" title="Send mail">'+ic('mail')+'</button></a>':'')+'<button class="ib" title="Redigér kunde" onclick="openK('+i+')">'+ic('edit')+'</button>'+(!c.c&&c.sid?'<button class="ib d" title="Slet kunde" onclick="delK('+c.sid+')">'+ic('trash')+'</button>':'')+'<button class="p" onclick="nytK('+i+')">'+ic('plus')+'Tilbud</button></td></tr>'}).join('')+(ks.some(kmatch)?'':'<tr><td colspan="6" class="mut" style="text-align:center;padding:30px">Ingen kunder matcher søgningen</td></tr>')+'</tbody></table></div>'}
+function vDash(){
+ var cur=pk(nowS(),P),ds=S.docs,tq=ds.filter(function(d){return d.type=='Tilbud'});
+ var T=function(a){return a.reduce(function(n,d){return n+sum(d).n},0)},SF=function(d){return d.st!='Kladde'};
+ var sent=tq.filter(function(d){return SF(d)&&pk(d.dato,P)==cur}),acc=sent.filter(function(d){return d.st=='Accepteret'}),
+ fak=ds.filter(function(d){return d.type=='Faktura'&&SF(d)&&pk(d.dato,P)==cur}),
+ open=tq.filter(function(d){return d.st=='Sendt'||d.st=='Set'}),unpaid=ds.filter(function(d){return d.type=='Faktura'&&d.st=='Sendt'}),
+ ks=custs(),nyk=ks.filter(function(c){return pk(c.first,P)==cur});
+ var K=[['Tilbud sendt',sent.length,kr(T(sent))+' ekskl. moms'],['Accepteret',acc.length,kr(T(acc))],['Konvertering',sent.length?Math.round(acc.length/sent.length*100)+'%':'–','af sendte tilbud'],['Faktureret',kr(T(fak)),fak.length+' fakturaer'],['Åbne tilbud',open.length,kr(T(open))+' i pipeline'],['Udestående',kr(T(unpaid)),unpaid.length+' ubetalte fakturaer'],['Kunder',ks.length,nyk.length+' nye denne '+PL[P]],['Gns. tilbud',sent.length?kr(T(sent)/sent.length):'–','ekskl. moms']];
+ var N={day:7,week:8,month:6,year:4}[P],bk=[];for(var i=N-1;i>=0;i--)bk.push(pk(back(P,i),P));
+ var sa=bk.map(function(k){return T(tq.filter(function(d){return SF(d)&&pk(d.dato,P)==k}))}),aa=bk.map(function(k){return T(tq.filter(function(d){return d.st=='Accepteret'&&pk(d.dato,P)==k}))}),mx=Math.max.apply(null,sa.concat([1]));
+ var fu=open.filter(function(d){return age(d)>=3}).sort(function(a,b){return age(b)-age(a)}).slice(0,5);
+ var h='';
+ h+=greet()+attn(1);h+='<div class="row" style="margin-bottom:14px"><span class="mut">Viser denne '+PL[P]+'</span><div class="seg">'+[['day','Dag'],['week','Uge'],['month','Måned'],['year','År']].map(function(x){return '<button class="'+(P==x[0]?'on':'')+'" onclick="setP(\''+x[0]+'\')">'+x[1]+'</button>'}).join('')+'</div></div>';
+ h+='<div class="kp">'+K.map(function(k){return '<div class="card k"><div class="l">'+k[0]+'</div><div class="v">'+k[1]+'</div><div class="s">'+k[2]+'</div></div>'}).join('')+'</div>';
+ h+='<div class="three">'+wgGoal()+wgPie()+wgCal()+'</div>';h+='<div class="card"><div class="row"><b>Tilbud over tid</b><span class="mut"><span class="dot"></span>Sendt <span class="dot a"></span>Accepteret (ekskl. moms)</span></div><div class="ch">'+bk.map(function(k,i){return '<div title="'+lbl(k,P)+': sendt '+kr(sa[i])+', accepteret '+kr(aa[i])+'"><div class="bars"><i style="height:'+Math.round(sa[i]/mx*150)+'px;animation-delay:'+(i*70)+'ms"></i><i class="a" style="height:'+Math.round(aa[i]/mx*150)+'px;animation-delay:'+(i*70+60)+'ms"></i></div><span class="mut">'+lbl(k,P)+'</span></div>'}).join('')+'</div></div>';
+ var li=function(a,b,c){return '<div class="li"><div>'+a+'</div><div class="r">'+b+'</div></div>'};
+ h+='<div class="two"><div class="card"><b>Følg op</b><div class="mut" style="margin-bottom:6px">Tilbud uden svar i 3+ dage</div>'+(fu.length?fu.map(function(d){return li('<b>'+esc(d.k.n||'Uden kunde')+'</b><div class="mut">'+d.type+' '+d.nr+' · '+age(d)+' dage siden</div>','<b>'+kr(sum(d).t)+'</b> <button onclick="prev('+d.id+')">Åbn</button>')}).join(''):'<p class="mut">'+ic('ok')+'Ingen – du er helt ajour</p>')+'</div><div class="card"><b>Topkunder</b><div class="mut" style="margin-bottom:6px">Efter samlet værdi</div>'+(ks.length?ks.slice(0,5).map(function(c){return li('<b>'+esc(c.n)+'</b><div class="mut">'+c.c+' dokumenter</div>','<b>'+kr(c.v)+'</b>')}).join(''):'<p class="mut">Ingen kunder endnu.</p>')+'</div></div>';
+ h+=wgRow2();h+='<div class="card"><b>Seneste aktivitet</b>'+(ds.length?ds.slice(-6).reverse().map(function(d){return li('<b>'+d.type+' '+d.nr+'</b> <span class="tag st-'+d.st+'">'+d.st+'</span><div class="mut">'+esc(d.k.n||'Uden kunde')+' · '+d.dato+'</div>',kr(sum(d).t)+' <button onclick="prev('+d.id+')">Åbn</button>')}).join(''):'<p class="mut">Ingen aktivitet endnu.</p>')+'</div>';
+ return h}
+var _lt,ICN={dots:'<circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/>',cal:'<path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/>',bell:'<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>',chl:'<path d="m15 18-6-6 6-6"/>',chr:'<path d="m9 18 6-6-6-6"/>',dl:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/>',search:'<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',x:'<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',bulb:'<path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/>',chart:'<path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/>',receipt:'<path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 17.5v-11"/>',dash:'<rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/>',
+doc:'<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/>',
+users:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+pkg:'<path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/>',
+firm:'<rect width="20" height="14" x="2" y="7" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>',
+out:'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/>',
+mail:'<rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>',
+link:'<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>',
+plus:'<path d="M5 12h14"/><path d="M12 5v14"/>',
+trash:'<path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>',
+copy:'<rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>',
+eye:'<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>',
+edit:'<path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/>',
+arrow:'<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>',
+ok:'<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/>',
+print:'<path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect width="12" height="8" x="6" y="14"/>'};
+function ic(n){return '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">'+ICN[n]+'</svg>'}
+document.querySelectorAll('[data-i]').forEach(function(e){e.innerHTML=ic(e.getAttribute('data-i'))});
+function cnt(){document.querySelectorAll('.k .v').forEach(function(e){var t=e.textContent,kd=/kr\./.test(t)?'k':/%$/.test(t)?'p':/^\d+$/.test(t)?'n':'';if(!kd)return;var v=parseFloat(t.replace(/\./g,'').replace(',','.'))||0,t0=null;function f(ts){t0=t0||ts;var q=Math.min(1,(ts-t0)/800),x=v*(1-Math.pow(1-q,3));e.textContent=kd=='k'?kr(x):kd=='p'?Math.round(x)+'%':Math.round(x);if(q<1)requestAnimationFrame(f)}requestAnimationFrame(f)})}
+var PLANS={start:{n:'Start',p:99},pro:{n:'Pro',p:199},biz:{n:'Business',p:349}},LV={start:1,pro:2,biz:3};
+function can(f){return LV[S.plan||'pro']>=({link:2,pakker:2,rabat:2,csv:3}[f]||1)}
+function up(f){toast('Kræver '+(f=='csv'?'Business':'Pro')+'-abonnement')}
+function planCard(){var P2={start:['Start','99','Op til 15 dokumenter pr. måned, ydelseslister, dashboard og kunder.'],pro:['Pro','199','Ubegrænsede dokumenter, accept-links, pakker og rabat.'],biz:['Business','349','Alt i Pro plus CSV-eksport og prioriteret support.']},c=P2[S.plan||'pro'];
+ return '<div class="card"><div class="row"><div><span class="bd" style="background:#e4edff;color:var(--ac)">Abonnement</span><h4 style="margin:10px 0 2px;font-size:22px">'+c[0]+' <span class="mut" style="font-size:15px;font-weight:600">'+c[1]+' kr./md. ekskl. moms</span></h4><div class="mut" style="margin:0">'+c[2]+'</div></div><div><label>Skift plan (demo)</label><select style="width:auto" onchange="S.plan=this.value;sv();render();toast(\'Plan: \'+PLANS[this.value].n)">'+Object.keys(PLANS).map(function(k){return '<option value="'+k+'"'+(S.plan==k?' selected':'')+'>'+PLANS[k].n+' – '+PLANS[k].p+' kr./md.</option>'}).join('')+'</select><div class="mut" style="margin:4px 0 0;font-size:12px">Styres af Stripe, når betaling er sat op.</div></div></div></div>'}
+function addPak(){if(!can('pakker')){up('pakker');return}var k=S.pakker[+$('pak').value];if(k){k.l.forEach(function(x){D.l.push({t:x.t,a:x.a,e:x.e,p:x.p})});lines()}}
+function savePak(){if(!can('pakker')){up('pakker');return}if(!D.l.length){toast('Tilføj linjer først');return}var n=prompt('Navn på pakken:');if(!n)return;S.pakker.push({n:n,l:JSON.parse(JSON.stringify(D.l))});sv();toast('Pakke gemt');render()}
+function exportCsv(){if(!can('csv')){up('csv');return}var f=function(n){return n.toFixed(2).replace('.',',')},R=[['Type','Nr','Dato','Kunde','Status','Ekskl. moms','Moms','Inkl. moms']];S.docs.forEach(function(d){var m=sum(d);R.push([d.type,d.nr,d.dato,d.k.n,d.st,f(m.n),f(m.m),f(m.t)])});
+ var c='\ufeff'+R.map(function(r){return r.map(function(x){return '"'+String(x).replace(/"/g,'""')+'"'}).join(';')}).join('\n'),a=document.createElement('a');a.href=URL.createObjectURL(new Blob([c],{type:'text/csv'}));a.download='tilbudo-eksport.csv';a.click();toast('CSV hentet')}
+function addDays(s,n){var d=new Date(s+'T00:00:00Z');d.setUTCDate(d.getUTCDate()+(+n||0));return d.toISOString().slice(0,10)}
+function due(d){return addDays(d.dato,d.dage)}
+var CAT=['Materialer','Værktøj','Kørsel','Software','Løn','Forsikring','Andet'];
+function segHtml(){return '<div class="seg">'+[['day','Dag'],['week','Uge'],['month','Måned'],['year','År']].map(function(x){return '<button class="'+(P==x[0]?'on':'')+'" onclick="setP(\''+x[0]+'\')">'+x[1]+'</button>'}).join('')+'</div>'}
+function addUdg(){var t=$('ut').value.trim(),b=parseFloat(String($('ub').value).replace(',','.'));if(!t||!(b>0)){toast('Udfyld beskrivelse og beløb');return}S.udg.push({id:Date.now(),dato:$('ud').value||nowS(),t:t,k:$('uk').value,b:b,m:$('um').checked?b*.25:0});UO=0;sv();render();toast('Udgift tilføjet')}
+function delUdg(id){S.udg=S.udg.filter(function(x){return x.id!=id});sv();render()}
+var UO=0,UQ='',UC='Alle',US='dato',UD=-1,CC={Materialer:'#2563eb',Værktøj:'#7c3aed',Kørsel:'#f59e0b',Software:'#06b6d4',Løn:'#10b981',Forsikring:'#ec4899',Andet:'#64748b'};
+function openUdg(){UO=1;render();setTimeout(function(){var e=$('ut');if(e)e.focus()},60)}
+function sortU(k){if(US==k)UD=-UD;else{US=k;UD=1}render()}
+document.addEventListener('keydown',function(e){if(e.key=='Escape'&&(UO||PO||EO||KO)){UO=0;PO=0;EO=null;KO=null;render()}});
+function vUdg(){
+ var cm=nowS().slice(0,7),tot=0,mon=0,vat=0,cs={};S.udg.forEach(function(x){tot+=x.b;vat+=x.m;if(x.dato.slice(0,7)==cm)mon+=x.b;cs[x.k]=(cs[x.k]||0)+x.b});
+ var cl=Object.keys(cs).sort(function(a,b){return cs[b]-cs[a]}),
+ rows=S.udg.filter(function(x){return (UC=='Alle'||x.k==UC)&&(!UQ||(x.t+' '+x.k).toLowerCase().indexOf(UQ)>-1)}).sort(function(a,b){var p=a[US],q=b[US];if(typeof p=='string'){p=p.toLowerCase();q=q.toLowerCase()}return (p<q?-1:p>q?1:0)*UD}),
+ ft=rows.reduce(function(n,x){return n+x.b},0),fv=rows.reduce(function(n,x){return n+x.m},0),
+ ar=function(k){return US==k?(UD>0?' ↑':' ↓'):''};
+ if(!S.udg.length&&!UO)return '<div class="empty">'+ic('receipt')+'<h3>Ingen udgifter endnu</h3><p class="mut">Registrér materialer, kørsel og andre omkostninger, så får du et rigtigt overblik over resultatet under Økonomi.</p><button class="p" onclick="openUdg()">'+ic('plus')+'Tilføj første udgift</button></div>';
+ var h='<div class="kp"><div class="card k"><div class="l">Udgifter i alt</div><div class="v">'+kr(tot)+'</div><div class="s">ekskl. moms · '+S.udg.length+' poster</div></div><div class="card k"><div class="l">Denne måned</div><div class="v">'+kr(mon)+'</div><div class="s">ekskl. moms</div></div><div class="card k"><div class="l">Moms (fradrag)</div><div class="v">'+kr(vat)+'</div><div class="s">indgående moms</div></div><div class="card k"><div class="l">Største kategori</div><div class="v" style="font-size:22px">'+(cl[0]||'–')+'</div><div class="s">'+(cl[0]?kr(cs[cl[0]]):'')+'</div></div></div>';
+ if(cl.length)h+='<div class="card"><div class="row"><b>Fordeling pr. kategori</b><span class="mut">'+kr(tot)+' i alt</span></div><div class="stack">'+cl.map(function(c,i){return '<i title="'+c+': '+kr(cs[c])+'" style="width:'+(cs[c]/tot*100)+'%;background:'+(CC[c]||'#64748b')+';animation-delay:'+(i*80)+'ms"></i>'}).join('')+'</div><div class="lg2">'+cl.map(function(c){return '<span><i style="background:'+(CC[c]||'#64748b')+'"></i>'+c+' · '+kr(cs[c])+'</span>'}).join('')+'</div></div>';
+ h+='<div class="tb"><div class="sw">'+ic('search')+'<input id="uq" placeholder="Søg i udgifter" value="'+esc(UQ)+'" oninput="UQ=this.value.toLowerCase();render();var e=$(\'uq\');e.focus();e.setSelectionRange(99,99)"></div></div><div style="display:flex;flex-wrap:wrap">'+['Alle'].concat(CAT).map(function(c){return '<button class="chip'+(UC==c?' on':'')+'" onclick="UC=\''+c+'\';render()">'+(c!='Alle'?'<i class="cd" style="background:'+(CC[c]||'#64748b')+'"></i>':'')+c+'</button>'}).join('')+'</div>';
+ h+='<div class="tw"><table class="tbl"><thead><tr><th class="s" onclick="sortU(\'dato\')">Dato'+ar('dato')+'</th><th class="s" onclick="sortU(\'t\')">Beskrivelse'+ar('t')+'</th><th class="s" onclick="sortU(\'k\')">Kategori'+ar('k')+'</th><th class="s r" onclick="sortU(\'b\')">Ekskl. moms'+ar('b')+'</th><th class="r">Moms</th><th class="r">Inkl. moms</th><th></th></tr></thead><tbody>'+
+ (rows.length?rows.map(function(x){return '<tr><td>'+x.dato+'</td><td><b>'+esc(x.t)+'</b></td><td><span class="bd"><i style="background:'+(CC[x.k]||'#64748b')+'"></i>'+esc(x.k)+'</span></td><td class="r">'+kr(x.b)+'</td><td class="r mut">'+kr(x.m)+'</td><td class="r"><b>'+kr(x.b+x.m)+'</b></td><td class="r act"><button class="ib d" title="Slet" onclick="delUdg('+x.id+')">'+ic('trash')+'</button></td></tr>'}).join(''):'<tr><td colspan="7" class="mut" style="text-align:center;padding:30px">Ingen udgifter matcher filteret</td></tr>')+
+ '</tbody><tfoot><tr><td colspan="3">Total ('+rows.length+' poster)</td><td class="r">'+kr(ft)+'</td><td class="r">'+kr(fv)+'</td><td class="r">'+kr(ft+fv)+'</td><td></td></tr></tfoot></table></div>';
+ if(UO)h+='<div id="dr"><div class="ov" onclick="UO=0;render()"></div><div class="pn"><div class="row" style="margin-bottom:18px"><h3 style="margin:0;font-size:21px;letter-spacing:-.5px">Ny udgift</h3><button class="ib" title="Luk" onclick="UO=0;render()">'+ic('x')+'</button></div><div class="fld"><label>Beskrivelse</label><input id="ut" placeholder="Fx materialer, benzin, værktøj" onkeydown="if(event.key==\'Enter\')addUdg()"></div><div class="fld"><label>Beløb ekskl. moms (kr.)</label><input id="ub" type="number" step="any" placeholder="0,00" onkeydown="if(event.key==\'Enter\')addUdg()"></div><div class="fld"><label>Kategori</label><select id="uk">'+CAT.map(function(c){return '<option>'+c+'</option>'}).join('')+'</select></div><div class="fld"><label>Dato</label><input id="ud" type="date" value="'+nowS()+'"></div><label class="tdl" style="margin:4px 0 22px"><input type="checkbox" id="um" checked style="width:auto"> Tilføj 25% moms (fradragsberettiget)</label><div class="row"><button onclick="UO=0;render()">Annullér</button><button class="p" onclick="addUdg()">'+ic('plus')+'Tilføj udgift</button></div></div></div>';
+ return h}
+function vOkon(){
+ var cur=pk(nowS(),P),td=nowS(),T=function(a){return a.reduce(function(n,d){return n+sum(d).n},0)},TG=function(a){return a.reduce(function(n,d){return n+sum(d).t},0)},fa=S.docs.filter(function(d){return d.type=='Faktura'});
+ var paid=fa.filter(function(d){return d.st=='Betalt'&&pk(d.betalt||d.dato,P)==cur}),issued=fa.filter(function(d){return d.st!='Kladde'&&pk(d.dato,P)==cur}),ex=S.udg.filter(function(x){return pk(x.dato,P)==cur}),
+ unpaid=fa.filter(function(d){return d.st=='Sendt'}),over=unpaid.filter(function(d){return due(d)<td}),
+ rev=T(paid),cost=ex.reduce(function(n,x){return n+x.b},0),vOut=issued.reduce(function(n,d){return n+sum(d).m},0),vIn=ex.reduce(function(n,x){return n+x.m},0);
+ var K=[['Omsætning (betalt)',kr(rev),paid.length+' betalte fakturaer'],['Udgifter',kr(cost),ex.length+' poster'],['Resultat',kr(rev-cost),'omsætning minus udgifter'],['Udestående',kr(TG(unpaid)),unpaid.length+' ubetalte fakturaer'],['Forfaldne',kr(TG(over)),over.length+' over betalingsfrist'],['Moms til betaling',kr(vOut-vIn),'estimat: udgående minus indgående']];
+ var N={day:7,week:8,month:6,year:4}[P],bk=[];for(var i=N-1;i>=0;i--)bk.push(pk(back(P,i),P));
+ var ra=bk.map(function(k){return T(fa.filter(function(d){return d.st=='Betalt'&&pk(d.betalt||d.dato,P)==k}))}),ca=bk.map(function(k){return S.udg.filter(function(x){return pk(x.dato,P)==k}).reduce(function(n,x){return n+x.b},0)}),mx=Math.max.apply(null,ra.concat(ca,[1]));
+ var cats={};ex.forEach(function(x){cats[x.k]=(cats[x.k]||0)+x.b});var cl=Object.keys(cats).sort(function(a,b){return cats[b]-cats[a]}),cm=cats[cl[0]]||1;
+ var h='<div class="row" style="margin-bottom:14px"><span class="mut">Viser denne '+PL[P]+'</span>'+segHtml()+'</div><div class="kp">'+K.map(function(k){return '<div class="card k"><div class="l">'+k[0]+'</div><div class="v">'+k[1]+'</div><div class="s">'+k[2]+'</div></div>'}).join('')+'</div>';
+ h+='<div class="card"><div class="row"><b>Omsætning og udgifter</b><span class="mut"><span class="dot"></span>Omsætning <span class="dot c"></span>Udgifter (ekskl. moms)</span></div><div class="ch">'+bk.map(function(k,i){return '<div title="'+lbl(k,P)+': omsætning '+kr(ra[i])+', udgifter '+kr(ca[i])+'"><div class="bars"><i style="height:'+Math.round(ra[i]/mx*150)+'px;animation-delay:'+(i*70)+'ms"></i><i class="c" style="height:'+Math.round(ca[i]/mx*150)+'px;animation-delay:'+(i*70+60)+'ms"></i></div><span class="mut">'+lbl(k,P)+'</span></div>'}).join('')+'</div></div>';
+ var li=function(a,b){return '<div class="li"><div>'+a+'</div><div class="r">'+b+'</div></div>'};
+ var ov=over.slice().sort(function(a,b){return due(a)<due(b)?-1:1}).slice(0,6);
+ h+='<div class="two"><div class="card"><b>Forfaldne fakturaer</b><div class="mut" style="margin-bottom:6px">Betalingsfristen er overskredet</div>'+(ov.length?ov.map(function(d){var n=Math.floor((new Date(td+'T00:00:00Z')-new Date(due(d)+'T00:00:00Z'))/864e5);return li('<b>'+esc(d.k.n||'Uden kunde')+'</b><div class="mut">Faktura '+d.nr+' · '+n+' dage over</div>','<b>'+kr(sum(d).t)+'</b> <button onclick="stat('+d.id+',\'Betalt\')">'+ic('ok')+'Betalt</button>')}).join(''):'<p class="mut">'+ic('ok')+'Ingen forfaldne fakturaer</p>')+'</div>'+
+ '<div class="card"><b>Udgifter pr. kategori</b><div class="mut" style="margin-bottom:8px">Denne '+PL[P]+'</div>'+(cl.length?cl.map(function(c){return '<div style="margin-bottom:12px"><div class="row"><span>'+esc(c)+'</span><b>'+kr(cats[c])+'</b></div><div class="pb"><i style="width:'+Math.round(cats[c]/cm*100)+'%"></i></div></div>'}).join(''):'<p class="mut">Ingen udgifter i perioden. <a href="#" onclick="go(\'udg\');return false">Tilføj udgift</a></p>')+'</div></div>';
+ return h+'<p class="mut">Tallene er vejledende og erstatter ikke din bogføring. Omsætning regnes, når fakturaen markeres som betalt.</p>'}
+var TIPS=['Følg op på tilbud efter 3 dage. Det er her de fleste handler afgøres.','Sæt en frist på tilbuddet, så kunden har en grund til at svare hurtigt.','Send fakturaen samme dag, jobbet er færdigt.','Gem tilbagevendende opgaver som pakker, og spar tid på hvert tilbud.','Ring til gamle kunder. De er nemmere at sælge til end nye.','Tjek forfaldne fakturaer hver mandag morgen.','Skriv præcist, hvad der er med i prisen, så undgår du diskussioner bagefter.'];
+function greet(){var d=new Date(),hr=d.getHours(),g=hr<10?'Godmorgen':hr<17?'Goddag':'Godaften',dn=['søndag','mandag','tirsdag','onsdag','torsdag','fredag','lørdag'];
+ return '<div class="hero"><div><h3>'+g+(S.firma.navn?', '+esc(S.firma.navn):'')+'</h3><div>'+dn[d.getDay()]+' den '+d.getDate()+'. '+MN[d.getMonth()]+' '+d.getFullYear()+'</div><div class="tip">'+ic('bulb')+TIPS[Math.floor(Date.now()/864e5)%TIPS.length]+'</div></div><div class="qa"><button onclick="openEv()">'+ic('cal')+'Ny begivenhed</button><button onclick="go(\'udg\')">'+ic('receipt')+'Ny udgift</button><button onclick="go(\'kund\')">'+ic('users')+'Kunder</button>'+'</div></div>'}
+function setMal(){var x=prompt('Månedligt mål (kr. ekskl. moms):',S.mal||50000);if(x===null)return;x=parseFloat(String(x).replace(/\./g,'').replace(',','.'));if(x>0){S.mal=x;sv();render()}}
+function wgGoal(){var cm=nowS().slice(0,7),v=S.docs.filter(function(d){return d.type=='Tilbud'&&d.st=='Accepteret'&&d.dato.slice(0,7)==cm}).reduce(function(n,d){return n+sum(d).n},0),g=S.mal||50000,pc=Math.min(100,Math.round(v/g*100));
+ return '<div class="card"><b>Månedsmål</b><div class="goal"><div class="ring" style="background:conic-gradient(var(--ac) '+pc*3.6+'deg,#e6eefc 0)"><span>'+pc+'%</span></div><div><div class="mut">Accepterede tilbud i '+MN[+cm.slice(5)-1]+'</div><b style="font-size:20px">'+kr(v)+'</b><div class="mut">af '+kr(g)+'</div><button style="margin-top:8px" onclick="setMal()">'+ic('edit')+'Ret mål</button></div></div></div>'}
+function wgPie(){var C={Kladde:'#cbd5e1',Sendt:'#60a5fa',Set:'#f59e0b',Accepteret:'#22c55e',Afvist:'#ef4444'},tq=S.docs.filter(function(d){return d.type=='Tilbud'}),n={},a=0,g=[],tot=tq.length;tq.forEach(function(d){n[d.st]=(n[d.st]||0)+1});
+ Object.keys(C).forEach(function(k){if(n[k]){g.push(C[k]+' '+a*3.6+'deg '+(a+n[k]/tot*100)*3.6+'deg');a+=n[k]/tot*100}});
+ return '<div class="card"><b>Tilbudsstatus</b><div class="goal"><div class="ring" style="background:'+(tot?'conic-gradient('+g.join(',')+')':'#e6eefc')+'"><span>'+tot+'</span></div><div>'+Object.keys(C).map(function(k){return '<div class="mut"><span class="dot" style="background:'+C[k]+';margin-left:0"></span>'+k+' '+(n[k]||0)+'</div>'}).join('')+'</div></div></div>'}
+function wgCal(){var n=new Date(),y=n.getFullYear(),m=n.getMonth(),f=(new Date(y,m,1).getDay()+6)%7,dn=new Date(y,m+1,0).getDate(),ds={},p2=function(x){return ('0'+x).slice(-2)},tl=y+'-'+p2(m+1)+'-'+p2(n.getDate());
+ S.docs.forEach(function(d){if(d.type=='Faktura'&&d.st=='Sendt')ds[due(d)]=(ds[due(d)]||'')+'Forfald: faktura '+d.nr+'. '});
+ var h='<div class="cal">'+['M','T','O','T','F','L','S'].map(function(x){return '<b>'+x+'</b>'}).join('');for(var i=0;i<f;i++)h+='<span></span>';
+ for(var d=1;d<=dn;d++){var k=y+'-'+p2(m+1)+'-'+p2(d);h+='<span class="'+(k==tl?'td ':'')+(ds[k]?'dv':'')+'" title="'+(ds[k]||'')+'">'+d+'</span>'}
+ return '<div class="card"><div class="row"><b>Kalender</b><span class="mut">'+MN[m]+' '+y+'</span></div>'+h+'</div><div class="mut" style="margin-top:10px"><span class="dot" style="background:#ef4444;margin-left:0"></span>Forfaldsdato for faktura</div></div>'}
+function addTodo(){var i=$('tdi'),t=i.value.trim();if(!t)return;S.todo.push({id:Date.now(),t:t,done:0});sv();render();var e=$('tdi');if(e)e.focus()}
+function togTodo(id){S.todo.forEach(function(x){if(x.id==id)x.done=x.done?0:1});sv();render()}
+function delTodo(id){S.todo=S.todo.filter(function(x){return x.id!=id});sv();render()}
+function wgRow2(){return '<div class="two"><div class="card"><div class="row"><b>Opgaver</b><span class="mut">'+S.todo.filter(function(x){return !x.done}).length+' åbne</span></div><div class="row" style="margin:10px 0;flex-wrap:nowrap"><input id="tdi" placeholder="Ny opgave, fx ring til Hansen" onkeydown="if(event.key==\'Enter\')addTodo()"><button class="p" onclick="addTodo()">'+ic('plus')+'Tilføj</button></div>'+(S.todo.length?S.todo.map(function(x){return '<div class="li"><label class="tdl'+(x.done?' dn':'')+'"><input type="checkbox" style="width:auto"'+(x.done?' checked':'')+' onchange="togTodo('+x.id+')"> '+esc(x.t)+'</label><button class="d ib" onclick="delTodo('+x.id+')">'+ic('trash')+'</button></div>'}).join(''):'<p class="mut">Ingen opgaver endnu. Skriv en huskeliste til dagen.</p>')+'</div><div class="card"><b>Noter</b><textarea rows="8" style="margin-top:10px;resize:vertical" placeholder="Skriv noter, ideer og aftaler her" oninput="S.note=this.value;sv()">'+esc(S.note||'')+'</textarea></div></div>'}
+var CM=nowS().slice(0,7),EO=null,KC={møde:'#2563eb',opfølgning:'#f59e0b',opgave:'#10b981',andet:'#64748b',forfald:'#ef4444',udløb:'#a855f7'},KL={møde:'Møde',opfølgning:'Opfølgning',opgave:'Opgave',andet:'Andet',forfald:'Forfald',udløb:'Udløb'},MF=['Januar','Februar','Marts','April','Maj','Juni','Juli','August','September','Oktober','November','December'],RO=[[-1,'Ingen påmindelse'],[0,'Ved start'],[15,'15 min. før'],[60,'1 time før'],[1440,'1 dag før']],FR={};
+try{FR=JSON.parse(localStorage.getItem('tf_f')||'{}')}catch(e){}
+function evs(){var a=S.ev.map(function(e){return {id:e.id,t:e.t,d:e.d,tm:e.tm||'',k:e.k,src:'ev',e:e}});
+ S.docs.forEach(function(d){if(d.type=='Faktura'&&d.st=='Sendt')a.push({id:'f'+d.id,t:'Forfald: faktura '+d.nr+(d.k.n?' · '+d.k.n:''),d:due(d),tm:'',k:'forfald',src:'doc',doc:d.id});if(d.type=='Tilbud'&&(d.st=='Sendt'||d.st=='Set'))a.push({id:'q'+d.id,t:'Tilbud '+d.nr+' udløber'+(d.k.n?' · '+d.k.n:''),d:due(d),tm:'',k:'udløb',src:'doc',doc:d.id})});return a}
+function ecmp(a,b){var x=a.tm||'99',y=b.tm||'99';return x<y?-1:x>y?1:0}
+function badge(){var b=$('kb');if(b)b.textContent=evs().filter(function(e){return e.d==nowS()}).length||''}
+function evClick(id){var e=evs().filter(function(x){return String(x.id)==String(id)})[0];if(!e)return;if(e.src=='doc')prev(e.doc);else editEv(e.id)}
+function openEv(d,t){EO={d:d||nowS(),tm:t||''};render();setTimeout(function(){var e=$('et');if(e)e.focus()},60)}
+function editEv(id){if(S.ev.some(function(x){return x.id==id})){EO={id:id};render()}}
+function saveEv(){var t=$('et').value.trim(),d=$('ed').value;if(!t||!d){toast('Skriv en titel og vælg en dato');return}var o={id:EO.id||Date.now(),t:t,d:d,tm:$('etm').value,k:$('ek').value,r:+$('er').value,c:$('ec').value,n:$('en').value};if(EO.id)S.ev=S.ev.map(function(x){return x.id==EO.id?o:x});else S.ev.push(o);EO=null;sv();render();toast('Begivenhed gemt')}
+function delEv(id){if(!confirm('Slet begivenheden?'))return;S.ev=S.ev.filter(function(x){return x.id!=id});EO=null;sv();render()}
+function chipH(e){return '<button class="ev" style="--c:'+KC[e.k]+'" title="'+esc(e.t)+'" onclick="event.stopPropagation();evClick(\''+e.id+'\')">'+(e.tm?e.tm+' ':'')+esc(e.t)+'</button>'}
+var KV='month',KD=nowS(),KS=-1,HH=52,DN=['Søndag','Mandag','Tirsdag','Onsdag','Torsdag','Fredag','Lørdag'];
+function wkStart(s){var d=new Date(s+'T00:00:00Z');d.setUTCDate(d.getUTCDate()-((d.getUTCDay()+6)%7));return d.toISOString().slice(0,10)}
+function wk(s){var d=new Date(s+'T00:00:00Z');d.setUTCDate(d.getUTCDate()-((d.getUTCDay()+6)%7)+3);var f=new Date(Date.UTC(d.getUTCFullYear(),0,4));return 1+Math.round(((d-f)/864e5-3+((f.getUTCDay()+6)%7))/7)}
+function kTitle(){var p=KD.split('-'),m=+p[1]-1;if(KV=='month')return MF[m]+' '+p[0];if(KV=='day')return DN[new Date(KD+'T00:00:00Z').getUTCDay()]+' '+(+p[2])+'. '+MF[m].toLowerCase()+' '+p[0];if(KV=='week'){var a=wkStart(KD),b=addDays(a,6);return 'Uge '+wk(KD)+' · '+(+a.slice(8))+'.–'+(+b.slice(8))+'. '+MF[+b.slice(5,7)-1].toLowerCase()+' '+b.slice(0,4)}return 'Næste 30 dage'}
+function kNav(n){KS=-1;if(KV=='day')KD=addDays(KD,n);else if(KV=='week')KD=addDays(KD,7*n);else if(KV=='agenda')KD=addDays(KD,30*n);else{var p=KD.split('-');KD=new Date(Date.UTC(+p[0],+p[1]-1+n,1)).toISOString().slice(0,10)}render()}
+function kToday(){KD=nowS();KS=-1;render()}
+function setKV(v){KV=v;KS=-1;render()}
+function kDay(k){KD=k;KV='day';KS=-1;render()}
+function mins(e){return +e.tm.slice(0,2)*60+ +e.tm.slice(3,5)}
+function nowTop(){var n=new Date();return Math.round((n.getHours()*60+n.getMinutes())/60*HH)}
+function colClick(ev,k){openEv(k,f2(Math.min(23,Math.floor(ev.offsetY/HH)))+':00')}
+function lay(L){L=L.slice().sort(ecmp);var cl=[],cur=[],end=-1;L.forEach(function(e){var s=mins(e);if(cur.length&&s>=end){cl.push(cur);cur=[];end=-1}cur.push(e);end=Math.max(end,s+60)});if(cur.length)cl.push(cur);
+ cl.forEach(function(c){var lanes=[];c.forEach(function(e){var s=mins(e),i=0;while(lanes[i]!==undefined&&lanes[i]>s)i++;lanes[i]=s+60;e._l=i});c.forEach(function(e){e._n=lanes.length})});return L}
+function kPost(){if(tab!='kal')return;var g=document.querySelector('.tg');if(g){if(KS<0)KS=Math.max(0,(new Date().getHours()-1)*HH);g.scrollTop=KS;g.onscroll=function(){KS=g.scrollTop}}}
+setInterval(function(){document.querySelectorAll('.now').forEach(function(el){el.style.top=nowTop()+'px'})},60000);
+function kHead(){return '<div class="kh"><button class="ib" title="Forrige" onclick="kNav(-1)">'+ic('chl')+'</button><h3 class="km">'+kTitle()+'</h3><button class="ib" title="Næste" onclick="kNav(1)">'+ic('chr')+'</button><button onclick="kToday()">I dag</button><div class="seg" style="margin-left:auto">'+[['day','Dag'],['week','Uge'],['month','Måned'],['agenda','Agenda']].map(function(x){return '<button class="'+(KV==x[0]?'on':'')+'" onclick="setKV(\''+x[0]+'\')">'+x[1]+'</button>'}).join('')+'</div></div>'}
+function kMonth(all,td){var p=KD.split('-'),y=+p[0],m=+p[1]-1,off=(new Date(Date.UTC(y,m,1)).getUTCDay()+6)%7,st=Date.UTC(y,m,1-off),by={},cells='';all.forEach(function(e){(by[e.d]=by[e.d]||[]).push(e)});
+ for(var i=0;i<42;i++){var d=new Date(st+i*864e5),k=d.toISOString().slice(0,10),L=(by[k]||[]).sort(ecmp);cells+='<div class="kd'+(d.getUTCMonth()!=m?' o':'')+(k==td?' t':'')+'" onclick="openEv(\''+k+'\')"><span class="n" title="Vis dagen" onclick="event.stopPropagation();kDay(\''+k+'\')">'+d.getUTCDate()+'</span>'+L.slice(0,3).map(chipH).join('')+(L.length>3?'<span class="more">+'+(L.length-3)+' mere</span>':'')+'</div>'}
+ return '<div class="kw">'+['Man','Tir','Ons','Tor','Fre','Lør','Søn'].map(function(x){return '<span>'+x+'</span>'}).join('')+'</div><div class="kc">'+cells+'</div>'}
+function kTime(days,all,td){var by={},c=days.length,gt='style="grid-template-columns:54px repeat('+c+',1fr)"';all.forEach(function(e){(by[e.d]=by[e.d]||[]).push(e)});
+ var head='<div class="tgh" '+gt+'><div></div>'+days.map(function(k){var d=new Date(k+'T00:00:00Z');return '<div class="th'+(k==td?' t':'')+'" onclick="kDay(\''+k+'\')"><span>'+DN[d.getUTCDay()].slice(0,3)+'</span><b>'+d.getUTCDate()+'</b></div>'}).join('')+'</div>';
+ var ad='<div class="tgh ad" '+gt+'><div class="mut">Hele dagen</div>'+days.map(function(k){return '<div>'+(by[k]||[]).filter(function(e){return !e.tm}).map(chipH).join('')+'</div>'}).join('')+'</div>';
+ var lab='<div class="tl">'+Array.apply(null,Array(24)).map(function(_,h){return '<span style="height:'+HH+'px">'+(h?f2(h)+':00':'')+'</span>'}).join('')+'</div>';
+ var body=days.map(function(k){var L=lay((by[k]||[]).filter(function(e){return e.tm}));return '<div class="tcol'+(k==td?' t':'')+'" style="height:'+24*HH+'px" onclick="colClick(event,\''+k+'\')">'+L.map(function(e){return '<button class="tev" style="--c:'+KC[e.k]+';top:'+Math.round(mins(e)/60*HH)+'px;height:'+(HH-3)+'px;left:'+(e._l/e._n*100)+'%;width:'+(100/e._n)+'%" title="'+esc(e.t)+'" onclick="event.stopPropagation();evClick(\''+e.id+'\')"><b>'+e.tm+'</b> '+esc(e.t)+'</button>'}).join('')+(k==td?'<div class="now" style="top:'+nowTop()+'px"></div>':'')+'</div>'}).join('');
+ return head+ad+'<div class="tg"><div class="tb2" '+gt+'>'+lab+body+'</div></div>'}
+function kAgenda(all){var e1=addDays(KD,30),L=all.filter(function(x){return x.d>=KD&&x.d<e1}).sort(function(a,b){return a.d<b.d?-1:a.d>b.d?1:ecmp(a,b)}),last='',h='<div class="ag">';
+ if(!L.length)return '<p class="mut" style="padding:20px 0">Ingen begivenheder i perioden. Klik på en dag i måneds- eller ugevisning for at tilføje en.</p>';
+ L.forEach(function(e){if(e.d!=last){last=e.d;h+='<h4>'+DN[new Date(e.d+'T00:00:00Z').getUTCDay()]+' '+(+e.d.slice(8))+'. '+MF[+e.d.slice(5,7)-1].toLowerCase()+'</h4>'}
+  h+='<div class="li"><div><span class="bd"><i style="background:'+KC[e.k]+'"></i>'+KL[e.k]+'</span> <b>'+esc(e.t)+'</b><div class="mut">'+(e.tm?'kl. '+e.tm:'Hele dagen')+'</div></div><button class="ib" title="Åbn" onclick="evClick(\''+e.id+'\')">'+ic('eye')+'</button></div>'});return h+'</div>'}
+function kSide(all,td){var up=all.filter(function(e){return e.d>=td}).sort(function(a,b){return a.d<b.d?-1:a.d>b.d?1:ecmp(a,b)}).slice(0,8),np=window.Notification?Notification.permission:'none';
+ return '<div><div class="card"><b>Kommende</b><div class="mut" style="margin-bottom:6px">De næste begivenheder</div>'+(up.length?up.map(function(e){return '<div class="li"><div><span class="bd"><i style="background:'+KC[e.k]+'"></i>'+KL[e.k]+'</span><div style="margin-top:5px"><b>'+esc(e.t)+'</b></div><div class="mut">'+e.d.slice(8)+'/'+e.d.slice(5,7)+(e.tm?' kl. '+e.tm:'')+'</div></div><button class="ib" title="Åbn" onclick="evClick(\''+e.id+'\')">'+ic('eye')+'</button></div>'}).join(''):'<p class="mut">Ingen kommende begivenheder. Klik på en dag for at tilføje en.</p>')+'</div>'+
+ '<div class="card"><b>Notifikationer</b><p class="mut" style="margin:6px 0 12px">'+(np=='granted'?'Slået til. Du får besked, når en påmindelse udløber, mens Tilbudo er åben.':np=='denied'?'Blokeret i din browser. Tillad notifikationer for siden i browserens indstillinger.':np=='none'?'Din browser understøtter ikke notifikationer her.':'Få besked, når en begivenhed starter eller skal følges op.')+'</p>'+(np=='default'?'<button class="p" onclick="enableNotif()">'+ic('bell')+'Slå notifikationer til</button>':np=='granted'?'<button onclick="testNotif()">'+ic('bell')+'Send test</button>':'')+'<p class="mut" style="margin:14px 0 0;font-size:12px">Vil du have påmindelser, selv når appen er lukket? Brug <b>Hent .ics</b> eller ikonet ved en begivenhed, og åbn filen på telefonen. Så lægges den i telefonens egen kalender med påmindelse.</p></div></div>'}
+function kDrawer(){var e=EO.id?S.ev.filter(function(x){return x.id==EO.id})[0]:{d:EO.d,t:'',tm:EO.tm||'',k:'møde',r:15,c:EO.c||'',n:''};
+ return '<div id="dr"><div class="ov" onclick="EO=null;render()"></div><div class="pn"><div class="row" style="margin-bottom:18px"><h3 style="margin:0;font-size:21px;letter-spacing:-.5px">'+(EO.id?'Redigér begivenhed':'Ny begivenhed')+'</h3><button class="ib" title="Luk" onclick="EO=null;render()">'+ic('x')+'</button></div><div class="fld"><label>Titel</label><input id="et" value="'+esc(e.t)+'" placeholder="Fx ring til Hansen om tilbud" onkeydown="if(event.key==\'Enter\')saveEv()"></div><div class="g2" style="margin-bottom:0"><div class="fld"><label>Dato</label><input id="ed" type="date" value="'+e.d+'"></div><div class="fld"><label>Tidspunkt (valgfrit)</label><input id="etm" type="time" value="'+(e.tm||'')+'"></div></div><div class="fld"><label>Type</label><select id="ek">'+['møde','opfølgning','opgave','andet'].map(function(k){return '<option value="'+k+'"'+(e.k==k?' selected':'')+'>'+KL[k]+'</option>'}).join('')+'</select></div><div class="fld"><label>Påmindelse</label><select id="er">'+RO.map(function(r){return '<option value="'+r[0]+'"'+(+e.r==r[0]?' selected':'')+'>'+r[1]+'</option>'}).join('')+'</select><div class="mut" style="font-size:12px;margin-top:4px">Uden tidspunkt bruges kl. 09:00.</div></div><div class="fld"><label>Kunde (valgfrit)</label><select id="ec"><option value="">–</option>'+custs().map(function(c){return '<option'+(e.c==c.n?' selected':'')+'>'+esc(c.n)+'</option>'}).join('')+'</select></div><div class="fld"><label>Note</label><textarea id="en" rows="3">'+esc(e.n||'')+'</textarea></div><div class="row"><span>'+(EO.id?'<button class="d" onclick="delEv('+EO.id+')">'+ic('trash')+'Slet</button> <button onclick="icsOne('+EO.id+')">'+ic('dl')+'.ics</button>':'')+'</span><span><button onclick="EO=null;render()">Annullér</button> <button class="p" onclick="saveEv()">Gem</button></span></div></div></div>'}
+function vKal(){var all=evs(),td=nowS(),m;
+ if(KV=='day')m=kTime([KD],all,td);else if(KV=='week'){var a=wkStart(KD),ds=[];for(var i=0;i<7;i++)ds.push(addDays(a,i));m=kTime(ds,all,td)}else if(KV=='agenda')m=kAgenda(all);else m=kMonth(all,td);
+ return '<div class="kg"><div class="card" style="padding:16px">'+kHead()+m+'<div class="lg2" style="margin-top:12px">'+Object.keys(KC).map(function(k){return '<span><i style="background:'+KC[k]+'"></i>'+KL[k]+'</span>'}).join('')+'</div></div>'+kSide(all,td)+'</div>'+(EO?kDrawer():'')}
+
+function enableNotif(){if(!window.Notification){toast('Din browser understøtter ikke notifikationer her');return}Notification.requestPermission().then(function(r){render();toast(r=='granted'?'Notifikationer er slået til':'Notifikationer blev ikke tilladt')})}
+function testNotif(){notify({t:'Dette er en testnotifikation',tm:''},'test')}
+function notify(e,k){var m=(e.tm?e.tm+' · ':'')+e.t;toast('Påmindelse: '+m);try{navigator.vibrate&&navigator.vibrate(200)}catch(x){}
+ if(window.Notification&&Notification.permission=='granted'){try{new Notification('Tilbudo',{body:m,tag:String(k)})}catch(x){try{navigator.serviceWorker.getRegistration().then(function(r){if(r)r.showNotification('Tilbudo',{body:m})})}catch(y){}}}}
+function remAt(e,r){var p=e.d.split('-'),t=(e.tm||'09:00').split(':');return new Date(+p[0],+p[1]-1,+p[2],+t[0],+t[1]).getTime()-r*6e4}
+function tick(){if(!S||!S.ev)return;var now=Date.now(),ch=0;evs().forEach(function(e){var r=e.src=='ev'?(e.e.r==null?-1:+e.e.r):0;if(r<0)return;var at=remAt(e,r),k=e.id+'@'+e.d+'@'+e.tm+'@'+r;if(FR[k]||now<at||now>at+72e5)return;FR[k]=now;ch=1;notify(e,k)});
+ if(ch){Object.keys(FR).forEach(function(k){if(now-FR[k]>12096e5)delete FR[k]});try{localStorage.setItem('tf_f',JSON.stringify(FR))}catch(x){}}}
+setInterval(tick,30000);document.addEventListener('visibilitychange',function(){if(!document.hidden)tick()});
+function dl(n,c,t){var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([c],{type:t}));a.download=n;a.click()}
+function f2(n){return ('0'+n).slice(-2)}
+function icsE(e,r,uid){var y=+e.d.slice(0,4),mo=+e.d.slice(5,7),dd=+e.d.slice(8,10),o=['BEGIN:VEVENT','UID:'+uid+'@tilbudo','DTSTAMP:'+new Date().toISOString().replace(/[-:]/g,'').slice(0,15)+'Z','SUMMARY:'+String(e.t).replace(/([,;\\])/g,'\\$1')];
+ if(e.tm){var h=+e.tm.slice(0,2),mi=+e.tm.slice(3,5),n=new Date(Date.UTC(y,mo-1,dd,h+1,mi));o.push('DTSTART:'+y+f2(mo)+f2(dd)+'T'+f2(h)+f2(mi)+'00','DTEND:'+n.getUTCFullYear()+f2(n.getUTCMonth()+1)+f2(n.getUTCDate())+'T'+f2(n.getUTCHours())+f2(n.getUTCMinutes())+'00')}
+ else{var n2=new Date(Date.UTC(y,mo-1,dd+1));o.push('DTSTART;VALUE=DATE:'+y+f2(mo)+f2(dd),'DTEND;VALUE=DATE:'+n2.getUTCFullYear()+f2(n2.getUTCMonth()+1)+f2(n2.getUTCDate()))}
+ if(r>=0){var t=e.tm?-r:540-r;o.push('BEGIN:VALARM','ACTION:DISPLAY','DESCRIPTION:'+String(e.t).replace(/([,;\\])/g,'\\$1'),'TRIGGER:'+(t<0?'-':'')+'PT'+Math.abs(t)+'M','END:VALARM')}
+ o.push('END:VEVENT');return o.join('\r\n')}
+function icsWrap(a){return 'BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Tilbudo//DA\r\nCALSCALE:GREGORIAN\r\n'+a.join('\r\n')+'\r\nEND:VCALENDAR\r\n'}
+function icsOne(id){var e=S.ev.filter(function(x){return x.id==id})[0];if(!e)return;dl('begivenhed.ics',icsWrap([icsE(e,e.r==null?-1:+e.r,e.id)]),'text/calendar');toast('Åbn filen på din telefon for at tilføje den til kalenderen')}
+function icsAll(){var td=nowS(),a=evs().filter(function(e){return e.d>=td}).map(function(e){return icsE(e,e.src=='ev'?(e.e.r==null?-1:+e.e.r):0,e.id)});if(!a.length){toast('Ingen kommende begivenheder at hente');return}dl('tilbudo-kalender.ics',icsWrap(a),'text/calendar');toast('Kalenderfil hentet')}
+var Q='',F='Alle';
+function toast(m){var t=$('toast');t.textContent=m;t.className='on';clearTimeout(toast.t);toast.t=setTimeout(function(){t.className=''},2200)}
+function dup(id){var d=JSON.parse(JSON.stringify(S.docs.filter(function(x){return x.id==id})[0]));d.id=Date.now();d.nr=nextNr();d.st='Kladde';delete d.tok;d.dato=nowS();S.docs.push(d);sv();render();toast('Kopi oprettet')}
+function ini(n){var p=(n||'?').trim().split(/\s+/);return ((p[0]||'?').charAt(0)+(p[1]?p[1].charAt(0):'')).toUpperCase()}
+function vList(){
+ if(!S.docs.length)return '<div class="empty">'+ic('doc')+'<h3>Ingen dokumenter endnu</h3><p class="mut">Opret dit første tilbud, og følg det herfra.</p><button class="p" onclick="nyt(\'Tilbud\')">'+ic('plus')+'Opret første tilbud</button></div>';
+ var open=0,won=0;S.docs.forEach(function(d){var t=sum(d).n;if(d.type=='Tilbud'&&(d.st=='Sendt'||d.st=='Set'))open+=t;if(d.st=='Accepteret'||d.st=='Betalt')won+=t});
+ var rows=S.docs.slice().reverse().filter(function(d){return (F=='Alle'||d.type==F||d.st==F||(F=='Forfaldne'&&overdue(d))||(F=='Følg op'&&stale(d)))&&(!Q||(d.k.n+' '+d.nr+' '+d.type).toLowerCase().indexOf(Q)>-1)});
+ var b=function(t,ti,f,c){return '<button class="ib'+(c?' '+c:'')+'" title="'+ti+'" onclick="'+f+'">'+ic(t)+'</button>'};
+ var h=attn()+'<div class="kp"><div class="card k"><div class="l">Dokumenter</div><div class="v">'+S.docs.length+'</div><div class="s">tilbud og fakturaer</div></div><div class="card k"><div class="l">Åbne tilbud</div><div class="v">'+kr(open)+'</div><div class="s">ekskl. moms</div></div><div class="card k"><div class="l">Accepteret / betalt</div><div class="v">'+kr(won)+'</div><div class="s">ekskl. moms</div></div></div>';
+ h+='<div class="tb"><div class="sw">'+ic('search')+'<input id="q" placeholder="Søg på kunde, nummer eller type" value="'+esc(Q)+'" oninput="Q=this.value.toLowerCase();render();var e=$(\'q\');e.focus();e.setSelectionRange(99,99)"></div></div>'+chips();
+ h+='<div class="tw"><table class="tbl cd cd1"><thead><tr><th>Nr.</th><th>Kunde</th><th>Dato</th><th>Status</th><th class="r">Beløb</th><th></th></tr></thead><tbody>'+(rows.length?rows.map(function(d){var m=sum(d),o=(d.type=='Tilbud'?['Kladde','Sendt','Set','Accepteret','Afvist']:['Kladde','Sendt','Betalt']).map(function(x){return '<option'+(x==d.st?' selected':'')+'>'+x+'</option>'}).join('');
+  return '<tr><td><b>'+d.nr+'</b><div class="mut">'+d.type+'</div></td><td><div class="who"><span class="av">'+esc(ini(d.k.n))+'</span><div><b>'+esc(d.k.n||'Uden kunde')+'</b><div class="mut">'+esc(d.k.m||'')+'</div></div></div></td><td>'+d.dato+'</td><td><select class="stsel st-'+d.st+'" onchange="stat('+d.id+',this.value)">'+o+'</select>'+(overdue(d)?'<div class="od">Forfalden '+odays(d)+' dage'+(d.ryk?' · '+d.ryk+(d.ryk>1?' rykkere':' rykker'):'')+'</div>':stale(d)?'<div class="od w">Ingen svar i '+fage(d)+' dage</div>':'')+'</td><td class="r"><b>'+kr(m.t)+'</b><div class="mut">'+kr(m.n)+' ekskl.</div></td><td class="r act">'+b('eye','Vis','prev('+d.id+')')+b('edit','Redigér','edit('+d.id+')')+b('copy','Kopiér','dup('+d.id+')')+(d.type=='Tilbud'?b('arrow','Lav faktura','toInv('+d.id+')'):(d.st!='Betalt'?b('ok','Markér betalt','stat('+d.id+',\'Betalt\')'):''))+(overdue(d)?b('mail','Send rykker','rykker('+d.id+')'):stale(d)?b('mail','Følg op','followUp('+d.id+')'):'')+b('trash','Slet','del('+d.id+')','d')+'</td></tr>'}).join(''):'<tr><td colspan="6" class="mut" style="text-align:center;padding:30px">Ingen dokumenter matcher filteret</td></tr>')+'</tbody></table></div>';
+ return h}
+function stat(id,s){S.docs.forEach(function(d){if(d.id==id){d.st=s;if(s=='Betalt')d.betalt=nowS()}});sv();render();if(s=='Betalt')toast('Markeret som betalt')}
+function del(id){if(!own()){toast('Kun ejeren kan slette');return}if(confirm('Slet dokumentet?')){S.docs=S.docs.filter(function(d){return d.id!=id});sv();render()}}
+function edit(id){D=JSON.parse(JSON.stringify(S.docs.filter(function(d){return d.id==id})[0]));tab='edit';render()}
+function toInv(id){var d=JSON.parse(JSON.stringify(S.docs.filter(function(x){return x.id==id})[0]));d.id=Date.now();d.type='Faktura';d.nr=nextNr();d.st='Kladde';d.dato=nowS();d.dage=+S.firma.fdage||8;S.docs.push(d);sv();render()}
+function vEdit(){
+ var po=S.pakker.map(function(y,i){return '<option value="'+i+'">'+esc(y.n)+'</option>'}).join('');var o=S.ydel.map(function(y,i){return '<option value="'+i+'">'+esc(y.n)+' – '+kr(D.moms=='incl'?y.p*1.25:y.p)+'</option>'}).join('');
+ return '<div class="card"><div class="row"><b>'+D.type+' '+D.nr+'</b><span class="mut">Faktura/tilbud-type:</span><select style="width:auto" onchange="D.type=this.value;render()"><option'+(D.type=='Tilbud'?' selected':'')+'>Tilbud</option><option'+(D.type=='Faktura'?' selected':'')+'>Faktura</option></select></div>'+
+ '<div class="g" style="margin-top:10px">'+(custs().length?'<div><label>Vælg eksisterende kunde</label><select onchange="pickK(this.value)"><option value="">– Vælg –</option>'+custs().map(function(c,i){return '<option value="'+i+'">'+esc(c.n)+'</option>'}).join('')+'</select></div>':'')+'<div><label>Kunde</label><input value="'+esc(D.k.n)+'" oninput="D.k.n=this.value"></div><div><label>Adresse</label><input value="'+esc(D.k.a)+'" oninput="D.k.a=this.value"></div><div><label>Kundens e-mail</label><input type="email" value="'+esc(D.k.m)+'" oninput="D.k.m=this.value"></div><div><label>Dato</label><input type="date" value="'+D.dato+'" oninput="D.dato=this.value"></div><div><label>Gyldig / betalingsfrist (dage)</label><input type="number" value="'+D.dage+'" oninput="D.dage=this.value"></div><div><label>Priser er angivet</label><select onchange="D.moms=this.value;lines()"><option value="excl"'+((D.moms||'excl')=='excl'?' selected':'')+'>Ekskl. moms</option><option value="incl"'+(D.moms=='incl'?' selected':'')+'>Inkl. moms</option><option value="none"'+(D.moms=='none'?' selected':'')+'>Momsfri (0%)</option></select></div><div><label>Rabat (%)</label><input type="number" min="0" max="100" value="'+(D.rabat||0)+'" oninput="if(!can(\'rabat\')){up(\'rabat\');this.value=0;return}D.rabat=this.value;tots()"></div></div></div>'+
+ '<div class="card"><b>Linjer</b><div id="ls" style="margin-top:10px"></div><div class="row" style="margin-top:8px"><select id="cat" style="width:auto;max-width:100%">'+o+'</select><button onclick="addCat()">+ Fra ydelser</button><button onclick="D.l.push({t:\'\',a:1,e:\'stk\',p:0});lines()">+ Tom linje</button>'+(S.pakker.length?'<select id="pak" style="width:auto;max-width:100%">'+po+'</select><button onclick="addPak()">+ Pakke</button>':'')+'<button onclick="savePak()">Gem som pakke</button></div><div class="tot" id="tt" style="margin-top:14px"></div></div>'+
+ '<div class="card"><label>Note til kunden</label><textarea rows="3" oninput="D.note=this.value">'+esc(D.note)+'</textarea></div>'+
+ '<div class="row"><button onclick="go(\'list\')">Annullér</button><span><button onclick="save(false)">Gem</button> <button class="p" onclick="save(true)">Gem og vis</button></span></div>'}
+function lines(){var h='<div class="ln mut"><span>Beskrivelse</span><span>Antal</span><span>Enhed</span><span>Pris'+(D.moms=='incl'?' inkl.':D.moms=='none'?'':' ekskl.')+'</span><span></span></div>';
+ D.l.forEach(function(x,i){h+='<div class="ln"><input value="'+esc(x.t)+'" oninput="D.l['+i+'].t=this.value"><input type="number" step="any" value="'+x.a+'" oninput="D.l['+i+'].a=this.value;tots()"><input value="'+esc(x.e)+'" oninput="D.l['+i+'].e=this.value"><input type="number" step="any" value="'+x.p+'" oninput="D.l['+i+'].p=this.value;tots()"><button class="d" onclick="D.l.splice('+i+',1);lines();tots()">×</button></div>'});
+ document.getElementById('ls').innerHTML=h;tots()}
+function tots(){var s=sum(D);var e=document.getElementById('tt');if(e)e.innerHTML=(s.r?'<div><span>Rabat '+(+D.rabat)+'%</span><span>−'+kr(s.r)+'</span></div>':'')+'<div><span>Beløb ekskl. moms</span><span>'+kr(s.n)+'</span></div><div><span>'+(D.moms=='none'?'Moms 0% (momsfri)':'Moms 25%')+'</span><span>'+kr(s.m)+'</span></div><div class="b"><span>I alt inkl. moms</span><span>'+kr(s.t)+'</span></div>'}
+function addCat(){var y=S.ydel[+document.getElementById('cat').value];if(y){D.l.push({t:y.n,a:1,e:y.e,p:r2(D.moms=='incl'?y.p*1.25:y.p)});lines()}}
+function save(show){if(!D.k.n.trim()){toast('Skriv kundens navn');return}if(!D.l.length){toast('Tilføj mindst én linje');return}var i=-1;S.docs.forEach(function(d,j){if(d.id==D.id)i=j});if(i<0){if(S.plan=='start'&&S.docs.filter(function(d){return d.dato.slice(0,7)==nowS().slice(0,7)}).length>=15){toast('Start-planen: maks. 15 dokumenter pr. måned. Opgradér til Pro.');return}lnk();S.docs.push(D)}else{lnk();S.docs[i]=D}sv();if(show)prev(D.id);else go('list')}
+function prev(id){D=S.docs.filter(function(d){return d.id==id})[0];tab='prev';render()}
+function vPrev(){var s=sum(D),f=S.firma,u=new Date(D.dato);u.setDate(u.getDate()+(+D.dage||0));
+ var rows=D.l.map(function(x){return '<tr><td>'+esc(x.t)+'</td><td class="r">'+x.a+' '+esc(x.e)+'</td><td class="r">'+kr(+x.p)+'</td><td class="r">'+kr(x.a*x.p)+'</td></tr>'}).join('');
+ return '<div class="row noprint" style="margin-bottom:12px"><button onclick="go(\'list\')">← Tilbage</button><span><button onclick="share()">'+ic('link')+'Del link</button> <button onclick="mail()">'+ic('mail')+'Send på mail</button> <button class="p" onclick="window.print()">'+ic('print')+'Print / gem som PDF</button></span></div>'+
+ '<div id="doc"><div class="row" style="align-items:flex-start"><div>'+(f.logo?'<img src="'+f.logo+'" style="max-height:60px;max-width:200px;display:block;margin-bottom:8px">':'')+'<h2 style="margin:0;color:'+(f.farve||'#111')+'">'+esc(f.navn||'Dit firma')+'</h2><div>'+esc(f.adr)+'<br>'+esc(f.tlf)+' · '+esc(f.mail)+'<br>CVR '+esc(f.cvr)+'</div></div><div class="r"><h2 style="margin:0;text-transform:uppercase;color:'+(f.farve||'#111')+'">'+D.type+'</h2>Nr. '+D.nr+'<br>Dato: '+D.dato+'<br>'+(D.type=='Tilbud'?'Gyldigt til: ':'Forfald: ')+u.toISOString().slice(0,10)+'</div></div>'+
+ '<p style="margin-top:22px"><b>Til:</b><br>'+esc(D.k.n)+'<br>'+esc(D.k.a)+'</p><table><tr><th>Beskrivelse</th><th class="r">Antal</th><th class="r">Pris'+(D.moms=='incl'?' inkl. moms':D.moms=='none'?'':' ekskl. moms')+'</th><th class="r">Beløb'+(D.moms=='incl'?' inkl. moms':D.moms=='none'?'':' ekskl. moms')+'</th></tr>'+rows+'</table>'+
+ '<div style="margin-left:auto;max-width:260px">'+(s.r?'<div class="row"><span>Rabat '+(+D.rabat)+'%</span><span>−'+kr(s.r)+'</span></div>':'')+'<div class="row"><span>Beløb ekskl. moms</span><span>'+kr(s.n)+'</span></div><div class="row"><span>'+(D.moms=='none'?'Moms 0% (momsfri)':'Moms 25%')+'</span><span>'+kr(s.m)+'</span></div><div class="row"><b>I alt inkl. moms</b><b>'+kr(s.t)+'</b></div></div>'+
+ (D.note?'<p style="margin-top:22px">'+esc(D.note).replace(/\n/g,'<br>')+'</p>':'')+''+(D.type=='Faktura'&&f.bank?'<p style="margin-top:18px"><b>Betaling:</b> '+esc(f.bank)+'</p>':'')+'<p style="margin-top:22px;font-size:12px;color:#555">'+esc(f.bet)+'</p></div>'}
+function mail(){var f=S.firma;var b='Hej '+D.k.n+',\n\nHermed '+D.type.toLowerCase()+' nr. '+D.nr+' på i alt '+kr(sum(D).t)+' inkl. moms.'+(D.tok?'\n\nSe og accepter online: '+location.origin+location.pathname+'?t='+D.tok:'')+'\n\nMed venlig hilsen\n'+f.navn+'\n'+f.tlf;
+ if(D.st=='Kladde')stat(D.id,'Sendt');location.href='mailto:'+encodeURIComponent(D.k.m)+'?subject='+encodeURIComponent(D.type+' '+D.nr+' fra '+f.navn)+'&body='+encodeURIComponent(b)}
+var PRE={VVS:[['Timeløn VVS-installatør','time',650],['Servicebesøg og kørsel','stk',395],['Udskiftning af blandingsbatteri','stk',1250],['Afprøvning og dokumentation','stk',450]],
+Tag:[['Timeløn tagdækker','time',595],['Stillads/lift pr. dag','dag',1800],['Tagrende','m',295],['Lægning af tagpap','m²',385]],
+Maler:[['Timeløn maler','time',495],['Maling af vægge','m²',95],['Maling af lofter','m²',110],['Spartling og afdækning','time',495]],
+El:[['Timeløn elektriker','time',595],['Servicebesøg og kørsel','stk',395],['Montering af stikkontakt','stk',450],['El-installationsrapport','stk',950]],
+Tømrer:[['Timeløn tømrer','time',575],['Opsætning af dør','stk',1850],['Gulvlægning','m²',295],['Kørsel','stk',350]]};
+function loadPre(k){if(!confirm('Erstat din nuværende prisliste med startydelser for '+k+'?'))return;S.ydel=PRE[k].map(function(y){return{n:y[0],e:y[1],p:y[2]}});sv();render()}
+function logo(el){var f=el.files[0];if(!f)return;var r=new FileReader();r.onload=function(){var im=new Image();im.onload=function(){var w=Math.min(300,im.width),c=document.createElement('canvas');c.width=w;c.height=im.height*w/im.width;c.getContext('2d').drawImage(im,0,0,c.width,c.height);S.firma.logo=c.toDataURL('image/png');sv();toast('Logo gemt')};im.src=r.result};r.readAsDataURL(f)}
+function vFirma(){var f=S.firma,fc=f.farve||'#2563eb',sw=['#2563eb','#0f766e','#7c3aed','#dc2626','#ea580c','#0f172a'];
+ function i(k,l,ph){return '<div class="fld"><label>'+l+'</label><input value="'+esc(f[k])+'" placeholder="'+ph+'" oninput="S.firma.'+k+'=this.value;sv()"></div>'}
+ var mo=f.moms||'excl';
+ return planCard()+'<div class="g2"><div class="card"><h4>Virksomhed</h4><p class="mut">Vises øverst på alle tilbud og fakturaer.</p>'+i('navn','Firmanavn','Fx Jensen VVS ApS')+'<div class="g2">'+i('cvr','CVR','12345678')+i('tlf','Telefon','12 34 56 78')+'</div>'+i('adr','Adresse','Vejnavn 1, 2100 København Ø')+i('mail','E-mail','kontakt@firma.dk')+i('bank','Betalingsoplysninger (vises på fakturaer)','Reg. 1234 · Konto 1234567')+'</div>'+
+ '<div class="card"><h4>Udseende</h4><p class="mut">Logo og farve på dine dokumenter.</p><div class="logoBox">'+(f.logo?'<img src="'+f.logo+'">':'<span class="mut">Intet logo uploadet</span>')+'</div><div class="row" style="justify-content:flex-start;margin:12px 0"><label class="fb">'+ic('plus')+'Upload logo<input type="file" accept="image/*" onchange="logo(this)" hidden></label>'+(f.logo?'<button onclick="S.firma.logo=\'\';sv();render()">'+ic('trash')+'Fjern</button>':'')+'</div><label>Farve</label><div class="sws">'+sw.map(function(c){return '<button class="swc'+(fc==c?' on':'')+'" title="'+c+'" style="background:'+c+'" onclick="S.firma.farve=\''+c+'\';sv();render()"></button>'}).join('')+'<input type="color" value="'+fc+'" onchange="S.firma.farve=this.value;sv();render()"></div><div class="mini" style="border-top:4px solid '+fc+'"><div>'+(f.logo?'<img src="'+f.logo+'">':'')+'<b style="color:'+fc+'">'+esc(f.navn||'Dit firma')+'</b></div><div class="mut" style="margin:0">Tilbud 1001</div></div></div></div>'+
+ '<div class="g2"><div class="card"><h4>Standardindstillinger</h4><p class="mut">Bruges, når du opretter nye dokumenter.</p><div class="fld"><label>Priser angives som</label><select onchange="S.firma.moms=this.value;sv()"><option value="excl"'+(mo=='excl'?' selected':'')+'>Ekskl. moms</option><option value="incl"'+(mo=='incl'?' selected':'')+'>Inkl. moms</option><option value="none"'+(mo=='none'?' selected':'')+'>Momsfri (0%)</option></select></div><div class="g2"><div class="fld"><label>Tilbud gyldigt (dage)</label><input type="number" value="'+(f.tdage||30)+'" oninput="S.firma.tdage=this.value;sv()"></div><div class="fld"><label>Betalingsfrist (dage)</label><input type="number" value="'+(f.fdage||8)+'" oninput="S.firma.fdage=this.value;sv()"></div></div></div>'+
+ '<div class="card"><h4>Betingelser</h4><p class="mut">Vises nederst på alle dokumenter.</p><textarea rows="6" oninput="S.firma.bet=this.value;sv()">'+esc(f.bet)+'</textarea></div></div>'+teamCard()+dataCard()+'<p class="mut">Alt gemmes automatisk.</p>'}
+function dataCard(){return '<div class="card"><h4>Data og backup</h4><p class="mut">Hent en sikkerhedskopi af alle dokumenter, udgifter og indstillinger, eller gendan fra en tidligere kopi.</p><div class="row" style="justify-content:flex-start;gap:8px"><button onclick="exportBackup()">'+ic('doc')+'Hent backup</button><label class="fb">'+ic('plus')+'Gendan backup<input type="file" accept="application/json" onchange="importBackup(this)" hidden></label></div></div>'}
+function exportBackup(){var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(S,null,1)],{type:'application/json'}));a.download='tilbudo-backup-'+nowS()+'.json';a.click();toast('Backup hentet')}
+function importBackup(el){var f=el.files[0];if(!f)return;var r=new FileReader();r.onload=function(){try{var d=JSON.parse(r.result);if(!d||!Array.isArray(d.docs)||!d.firma||!Array.isArray(d.ydel))throw 0;if(!confirm('Gendan backup? Dine nuværende data erstattes.'))return;d.plan=S.plan;S=d;flush();render();toast('Backup gendannet')}catch(e){toast('Ugyldig backupfil')}};r.readAsText(f)}
+var UN=['stk','time','dag','m','m²','m³','kg','l','pakke'],YQ='',PO=0;
+function unitOpts(e){return (UN.indexOf(e)<0?UN.concat([e]):UN).map(function(u){return '<option'+(u==e?' selected':'')+'>'+esc(u)+'</option>'}).join('')}
+function r2(n){return Math.round((+n||0)*100)/100}
+function setYp(i,v,inc){var x=parseFloat(v);x=isNaN(x)?0:x;var ex=inc?x/1.25:x;S.ydel[i].p=ex;var o=$(inc?'pe'+i:'pi'+i);if(o)o.value=r2(inc?ex:ex*1.25);sv()}
+function addY(){S.ydel.push({n:'Ny ydelse',e:'stk',p:0});YQ='';sv();render();toast('Ydelse tilføjet')}
+function delY(i){S.ydel.splice(i,1);sv();render()}
+function renPak(i){var n=prompt('Nyt navn:',S.pakker[i].n);if(n){S.pakker[i].n=n;sv();render()}}
+function newPak(){if(!can('pakker')){up('pakker');return}var n=$('pkn').value.trim(),l=[];S.ydel.forEach(function(y,i){if($('pc'+i).checked)l.push({t:y.n,a:+$('pq'+i).value||1,e:y.e,p:y.p})});if(!n||!l.length){toast('Giv pakken et navn, og vælg mindst én ydelse');return}S.pakker.push({n:n,l:l});PO=0;sv();render();toast('Pakke oprettet')}
+function vYdel(){
+ var avg=S.ydel.length?S.ydel.reduce(function(n,y){return n+y.p},0)/S.ydel.length:0,rows=S.ydel.map(function(y,i){return [y,i]}).filter(function(r){return !YQ||r[0].n.toLowerCase().indexOf(YQ)>-1});
+ var h='<div class="kp"><div class="card k"><div class="l">Ydelser</div><div class="v">'+S.ydel.length+'</div><div class="s">i din prisliste</div></div><div class="card k"><div class="l">Pakker</div><div class="v">'+S.pakker.length+'</div><div class="s">gemte sæt af linjer</div></div><div class="card k"><div class="l">Gns. pris</div><div class="v">'+kr(avg)+'</div><div class="s">ekskl. moms</div></div></div>';
+ h+='<div class="card"><h4>Hurtig start</h4><p class="mut">Indlæs eksempelydelser for din branche, og ret priserne til dine egne.</p><div class="tiles">'+Object.keys(PRE).map(function(k){return '<button class="tile" onclick="loadPre(\''+k+'\')"><b>'+k+'</b><span class="mut">'+PRE[k].length+' ydelser</span></button>'}).join('')+'</div></div>';
+ h+='<div class="tb"><div class="sw">'+ic('search')+'<input id="yq" placeholder="Søg i prislisten" value="'+esc(YQ)+'" oninput="YQ=this.value.toLowerCase();render();var e=$(\'yq\');e.focus();e.setSelectionRange(99,99)"></div><button class="p" style="margin-left:auto" onclick="addY()">'+ic('plus')+'Tilføj ydelse</button></div>';
+ h+='<div class="tw"><table class="tbl"><thead><tr><th>Ydelse</th><th>Enhed</th><th class="r">Pris ekskl. moms</th><th class="r">Pris inkl. moms</th><th></th></tr></thead><tbody>'+(rows.length?rows.map(function(r){var y=r[0],i=r[1];return '<tr><td><input value="'+esc(y.n)+'" oninput="S.ydel['+i+'].n=this.value;sv()"></td><td><select style="width:96px" onchange="S.ydel['+i+'].e=this.value;sv()">'+unitOpts(y.e)+'</select></td><td class="r"><div class="pi"><input id="pe'+i+'" type="number" step="any" value="'+r2(y.p)+'" oninput="setYp('+i+',this.value,0)"><span class="mut">kr.</span></div></td><td class="r"><div class="pi"><input id="pi'+i+'" type="number" step="any" value="'+r2(y.p*1.25)+'" oninput="setYp('+i+',this.value,1)"><span class="mut">kr.</span></div></td><td class="r act"><button class="ib d" title="Slet" onclick="delY('+i+')">'+ic('trash')+'</button></td></tr>'}).join(''):'<tr><td colspan="5" class="mut" style="text-align:center;padding:30px">'+(S.ydel.length?'Ingen ydelser matcher søgningen':'Din prisliste er tom. Vælg en branche ovenfor, eller tilføj en ydelse.')+'</td></tr>')+'</tbody></table></div>';
+ h+='<div class="row" style="margin:24px 0 12px"><div><h4 style="margin:0;font-size:19px">Pakker</h4><div class="mut" style="font-size:13px">Gemte sæt af linjer, du kan tilføje til et tilbud med ét klik'+(can('pakker')?'':' (kræver Pro)')+'.</div></div><button class="p" onclick="if(can(\'pakker\')){PO=1;render()}else up(\'pakker\')">'+ic('plus')+'Ny pakke</button></div>';
+ h+='<div class="tw"><table class="tbl"><thead><tr><th>Pakke</th><th>Indhold</th><th class="r">Samlet pris</th><th></th></tr></thead><tbody>'+(S.pakker.length?S.pakker.map(function(k,i){var t=k.l.reduce(function(n,x){return n+x.a*x.p},0);return '<tr><td><b>'+esc(k.n)+'</b></td><td class="mut"><div class="tr">'+k.l.map(function(x){return esc(x.t)}).join(', ')+'</div></td><td class="r"><b>'+kr(t)+'</b><div class="mut">ekskl. moms</div></td><td class="r act"><button class="ib" title="Omdøb" onclick="renPak('+i+')">'+ic('edit')+'</button><button class="ib d" title="Slet" onclick="S.pakker.splice('+i+',1);sv();render()">'+ic('trash')+'</button></td></tr>'}).join(''):'<tr><td colspan="4" class="mut" style="text-align:center;padding:30px">Ingen pakker endnu. Opret en her, eller gem linjerne fra et tilbud som pakke.</td></tr>')+'</tbody></table></div>';
+ if(PO)h+='<div id="dr"><div class="ov" onclick="PO=0;render()"></div><div class="pn"><div class="row" style="margin-bottom:18px"><h3 style="margin:0;font-size:21px;letter-spacing:-.5px">Ny pakke</h3><button class="ib" title="Luk" onclick="PO=0;render()">'+ic('x')+'</button></div><div class="fld"><label>Navn på pakken</label><input id="pkn" placeholder="Fx Badeværelse – standard"></div><label>Vælg ydelser og antal</label>'+(S.ydel.length?S.ydel.map(function(y,i){return '<div class="li"><label class="tdl"><input type="checkbox" id="pc'+i+'" style="width:auto"> '+esc(y.n)+'</label><input id="pq'+i+'" type="number" step="any" value="1" style="width:76px" title="Antal"></div>'}).join(''):'<p class="mut">Tilføj først nogle ydelser i prislisten.</p>')+'<div class="row" style="margin-top:22px"><button onclick="PO=0;render()">Annullér</button><button class="p" onclick="newPak()">'+ic('plus')+'Opret pakke</button></div></div></div>';
+ return h}
+var LS=['Ny','Kontaktet','Møde','Tilbud sendt','Vundet','Tabt'],LO=0;
+function addLead(){var n=$('ln').value.trim();if(!n){toast('Skriv et navn');return}S.leads.push({id:nid(),n:n,k:$('lk').value,m:$('lm').value,tlf:$('lt').value,v:+$('lv').value||0,st:'Ny',o:(U&&U.email)||'',d:'',note:'',c:nowS()});LO=0;sv();render();toast('Lead oprettet')}
+function setL(id,f,v){S.leads.forEach(function(l){if(l.id==id)l[f]=f=='v'?(+v||0):v});sv()}
+function stL(id,v){setL(id,'st',v);render()}
+function delL(id){if(!confirm('Slet leadet?'))return;S.leads=S.leads.filter(function(l){return l.id!=id});sv();render()}
+function toCust(id){var l=S.leads.filter(function(x){return x.id==id})[0];if(!l)return;if(S.kunder.some(function(k){return k.n.trim().toLowerCase()==l.n.trim().toLowerCase()})){toast('Kunden findes allerede');return}S.kunder.push({id:nid(),n:l.n.trim(),a:'',m:l.m||'',tlf:l.tlf||'',cvr:'',d:nowS(),log:[]});l.st='Vundet';sv();render();toast('Kunde oprettet')}
+function vLeads(){var ls=S.leads,sm=function(a){return a.reduce(function(n,l){return n+(+l.v||0)},0)},op=ls.filter(function(l){return l.st!='Vundet'&&l.st!='Tabt'}),wo=ls.filter(function(l){return l.st=='Vundet'});
+ var h='<div class="kp"><div class="card k"><div class="l">Åbne leads</div><div class="v">'+op.length+'</div><div class="s">i pipelinen</div></div><div class="card k"><div class="l">Pipeline-værdi</div><div class="v">'+kr(sm(op))+'</div><div class="s">ekskl. moms</div></div><div class="card k"><div class="l">Vundet</div><div class="v">'+kr(sm(wo))+'</div><div class="s">'+wo.length+' leads</div></div></div>';
+ h+='<div class="tb"><button class="p" style="margin-left:auto" onclick="LO=1;render()">'+ic('plus')+'Nyt lead</button></div>';
+ if(LO)h+='<div class="card"><h4>Nyt lead</h4><div class="g"><div class="fld"><label>Firma / navn</label><input id="ln"></div><div class="fld"><label>Kontaktperson</label><input id="lk"></div><div class="fld"><label>E-mail</label><input id="lm" type="email"></div><div class="fld"><label>Telefon</label><input id="lt"></div><div class="fld"><label>Forventet værdi (kr.)</label><input id="lv" type="number"></div></div><div class="row" style="margin-top:12px"><button onclick="LO=0;render()">Annullér</button><button class="p" onclick="addLead()">'+ic('plus')+'Opret lead</button></div></div>';
+ LS.forEach(function(st){var a=ls.filter(function(l){return l.st==st});if(!a.length)return;h+='<div class="row" style="margin:18px 0 8px"><h4 style="margin:0">'+st+' <span class="mut">('+a.length+' · '+kr(sm(a))+')</span></h4></div>';
+  a.forEach(function(l){var f=function(k,lb,t){return '<div class="fld"><label>'+lb+'</label><input'+(t?' type="'+t+'"':'')+' value="'+esc(l[k])+'" oninput="setL('+l.id+',\''+k+'\',this.value)"></div>'},od=l.d&&l.d<nowS()&&st!='Vundet'&&st!='Tabt';
+   h+='<div class="card"><div class="g">'+f('n','Firma / navn')+f('k','Kontaktperson')+f('m','E-mail')+f('tlf','Telefon')+f('v','Værdi (kr.)','number')+'<div class="fld"><label>Næste opfølgning'+(od?' (forfalden)':'')+'</label><input type="date" value="'+esc(l.d)+'"'+(od?' style="border-color:var(--bad)"':'')+' oninput="setL('+l.id+',\'d\',this.value)"></div><div class="fld"><label>Status</label><select onchange="stL('+l.id+',this.value)">'+LS.map(function(x){return '<option'+(x==st?' selected':'')+'>'+x+'</option>'}).join('')+'</select></div>'+f('o','Ansvarlig')+'</div><div class="fld"><label>Noter</label><textarea rows="2" oninput="setL('+l.id+',\'note\',this.value)">'+esc(l.note)+'</textarea></div><div class="row"><span class="mut">Oprettet '+esc(l.c)+'</span><span><button onclick="toCust('+l.id+')">Opret som kunde</button> <button class="ib d" title="Slet" onclick="delL('+l.id+')">'+ic('trash')+'</button></span></div></div>'})});
+ if(!ls.length&&!LO)h+='<div class="empty">'+ic('users')+'<h3>Ingen leads endnu</h3><p class="mut">Opret dit første lead, og følg det fra første kontakt til vundet kunde.</p></div>';
+ return h}
+boot();
+</script>
+</body>
+</html>
